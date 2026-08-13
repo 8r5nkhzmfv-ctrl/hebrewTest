@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ヘブル語学習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+Hebrew:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#17140f;
+    --card:#211d16;
+    --card2:#282318;
+    --parchment:#eae0c6;
+    --parchment-dim:#a89b7c;
+    --thread:#a1442f;
+    --thread-dim:#5c2a20;
+    --gold:#b8935f;
+    --gold-dim:#7a6440;
+    --line:#3a3326;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse at 20% -10%, #241f16 0%, transparent 55%),
+      radial-gradient(ellipse at 100% 110%, #1c1810 0%, transparent 55%),
+      var(--ink);
+    color:var(--parchment);
+    font-family:'Noto Sans JP',sans-serif;
+    min-height:100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:48px 16px 80px;
+  }
+  .app{width:100%;max-width:640px;}
+  .heb{font-family:'Noto Sans Hebrew',sans-serif;direction:rtl;unicode-bidi:isolate;}
+
+  header{text-align:center;margin-bottom:40px;}
+  .mark{font-family:'Noto Sans Hebrew',sans-serif;direction:rtl;font-size:30px;color:var(--gold);margin-bottom:10px;letter-spacing:.02em;}
+  h1{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:700;margin:0 0 8px;letter-spacing:.04em;}
+  .sub{font-size:13px;color:var(--parchment-dim);line-height:1.8;margin:0;}
+
+  .shelf{display:flex;flex-direction:column;gap:2px;}
+
+  .entry{
+    display:block;
+    text-decoration:none;
+    color:inherit;
+    background:linear-gradient(180deg,var(--card2),var(--card));
+    border:1px solid var(--line);
+    padding:22px 24px;
+    position:relative;
+    transition:border-color .18s ease, transform .18s ease, background .18s ease;
+  }
+  .entry:first-child{border-radius:6px 6px 0 0;}
+  .entry:last-child{border-radius:0 0 6px 6px;}
+  .entry + .entry{border-top:none;}
+  .entry:hover{border-color:var(--gold-dim);background:linear-gradient(180deg,#2c2519,var(--card));transform:translateX(3px);}
+
+  .entry-row{display:flex;align-items:baseline;justify-content:space-between;gap:16px;}
+  .entry-heb{font-family:'Noto Sans Hebrew',sans-serif;direction:rtl;font-weight:500;font-size:22px;color:var(--gold);}
+  .entry-num{font-size:11px;color:var(--parchment-dim);font-variant-numeric:tabular-nums;letter-spacing:.08em;white-space:nowrap;}
+  .entry-title{font-family:'Noto Serif JP',serif;font-size:16px;font-weight:700;margin:8px 0 4px;color:var(--parchment);}
+  .entry-desc{font-size:12.5px;color:var(--parchment-dim);line-height:1.6;}
+  .entry-arrow{position:absolute;right:22px;bottom:18px;font-size:14px;color:var(--gold-dim);opacity:0;transition:opacity .18s ease;}
+  .entry:hover .entry-arrow{opacity:1;}
+
+  .stitches{display:flex;gap:3px;margin:0 0 28px;}
+  .stitch{flex:1;height:2px;background:var(--thread-dim);border-radius:1px;}
+
+  footer{text-align:center;margin-top:36px;font-size:11px;color:var(--parchment-dim);opacity:.7;line-height:1.7;}
+
+  @media (max-width:480px){
+    .entry{padding:18px 18px;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="mark">אָלֶף בֵּית</div>
+    <h1>ヘブル語学習</h1>
+    <p class="sub">語彙・文法クイズと逐語訳クイズをまとめたページ。</p>
+  </header>
+
+  <div class="stitches">
+    <div class="stitch"></div><div class="stitch"></div><div class="stitch"></div><div class="stitch"></div>
+  </div>
+
+  <div class="shelf">
+
+    <a class="entry" href="hebrew_quiz.html">
+      <div class="entry-row">
+        <span class="entry-heb">אָלֶף בֵּית</span>
+        <span class="entry-num">基礎 01</span>
+      </div>
+      <div class="entry-title">ヘブライ語クイズ 1</div>
+      <div class="entry-desc">アレフベート・基礎語彙・文法を四択で学ぶ。</div>
+      <span class="entry-arrow">開く →</span>
+    </a>
+
+    <a class="entry" href="hebrew_quiz2.html">
+      <div class="entry-row">
+        <span class="entry-heb">אָלֶף בֵּית</span>
+        <span class="entry-num">基礎 02</span>
+      </div>
+      <div class="entry-title">ヘブライ語クイズ 2</div>
+      <div class="entry-desc">語彙・文法の続編クイズ。</div>
+      <span class="entry-arrow">開く →</span>
+    </a>
+
+    <a class="entry" href="genesis1_hebrew_quiz.html">
+      <div class="entry-row">
+        <span class="entry-heb">בְּרֵאשִׁית</span>
+        <span class="entry-num">創世記 1:1–2:3</span>
+      </div>
+      <div class="entry-title">創世記1章〜2:3 逐語ヘブル語クイズ</div>
+      <div class="entry-desc">本文の単語・単語（元の形）・動詞rootの3カテゴリで出題。</div>
+      <span class="entry-arrow">開く →</span>
+    </a>
+
+    <a class="entry" href="micah7_hebrew_quiz.html">
+      <div class="entry-row">
+        <span class="entry-heb">מִיכָה</span>
+        <span class="entry-num">ミカ書 7章</span>
+      </div>
+      <div class="entry-title">ミカ書7章 逐語ヘブル語クイズ</div>
+      <div class="entry-desc">本文の単語・単語（元の形）・動詞rootの3カテゴリで出題。</div>
+      <span class="entry-arrow">開く →</span>
+    </a>
+
+  </div>
+
+  <footer>
+    出題順・選択肢の配置はランダム。<br>
+    逐語訳クイズの「元の形」「root」は標準的な辞書知識に基づく推定。
+  </footer>
+
+</div>
+</body>
+</html>
