@@ -198,13 +198,16 @@
 /* ============ 発話 ============ */
 function speakHebrew(text, rate){
   try{
-    if(!('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'he-IL';
-    u.rate = rate || 0.9;
-    window._heUtterance = u; /* ブラウザによってはUtteranceが即GCされ無音になるため保持する */
-    setTimeout(()=>{ try{ window.speechSynthesis.speak(u); }catch(e){} }, 60);
+    speechSynthesis.cancel();
+    setTimeout(()=>{
+      const u = new SpeechSynthesisUtterance(text);
+      const voices = speechSynthesis.getVoices();
+      const heVoice = voices.find(v=>v.lang && v.lang.toLowerCase().startsWith('he'));
+      if(heVoice) u.voice = heVoice;
+      u.lang = 'he-IL';
+      u.rate = rate || 0.9;
+      speechSynthesis.speak(u);
+    }, 80);
   }catch(e){ /* 非対応環境：無音のまま表記のみで学習継続 */ }
 }
 
