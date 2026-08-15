@@ -198,11 +198,13 @@
 /* ============ 発話 ============ */
 function speakHebrew(text, rate){
   try{
+    if(!('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
     u.lang = 'he-IL';
     u.rate = rate || 0.9;
-    window.speechSynthesis.speak(u);
+    window._heUtterance = u; /* ブラウザによってはUtteranceが即GCされ無音になるため保持する */
+    setTimeout(()=>{ try{ window.speechSynthesis.speak(u); }catch(e){} }, 60);
   }catch(e){ /* 非対応環境：無音のまま表記のみで学習継続 */ }
 }
 
@@ -435,7 +437,7 @@ function showDirectionMenu(catKey){
 }
 function showFormatMenu(catKey,direction){
   const cat = CATS[catKey];
-  if(!cat.formats.includes('listening')){ return showCountMenu(catKey,direction,'reading'); }
+  if(direction==='j2h' || !cat.formats.includes('listening')){ return showCountMenu(catKey,direction,'reading'); }
   const panel = document.getElementById('wizard-panel');
   panel.innerHTML = '<button class="back-link" onclick="showDirectionMenu(\''+catKey+'\')">← 方向選択に戻る</button><div class="crumbs">'+cat.label+'</div><h1 class="headline">形式を選ぶ</h1>';
   const row = document.createElement('div'); row.className='choice-row';
@@ -491,6 +493,7 @@ function renderQuestion(){
 
   const isH2J = direction==='h2j';
   const isListening = format==='listening';
+  const isWordCat = quizState.catKey==='3ab';
 
   if(isH2J){
     if(isListening){
@@ -505,20 +508,18 @@ function renderQuestion(){
       col.appendChild(row); col.appendChild(hint);
       hero.appendChild(col);
       setTimeout(()=>speakHebrew(q.heb,0.9),300);
-      const sub=document.createElement('div'); sub.className='prompt-sub'; sub.textContent='聞こえたものの意味はどれ？';
+      const sub=document.createElement('div'); sub.className='prompt-sub'; sub.textContent = isWordCat ? '聞こえた発音はどれ？' : '聞こえたものの意味はどれ？';
       promptWrap.appendChild(sub);
     } else {
       const hebEl=document.createElement('div'); hebEl.className='prompt-heb'; hebEl.textContent=q.heb;
-      const readEl=document.createElement('div'); readEl.className='prompt-read'; readEl.textContent=readStr(q);
-      const sub=document.createElement('div'); sub.className='prompt-sub'; sub.textContent='この意味はどれ？';
-      promptWrap.appendChild(hebEl); promptWrap.appendChild(readEl);
-      if(q.note){ const n=document.createElement('div'); n.className='prompt-note'; n.textContent='※'+q.note; promptWrap.appendChild(n); }
+      const sub=document.createElement('div'); sub.className='prompt-sub'; sub.textContent = isWordCat ? 'この発音はどれ？' : 'この意味はどれ？';
+      promptWrap.appendChild(hebEl);
       promptWrap.appendChild(sub);
     }
   } else {
     const jaEl=document.createElement('div'); jaEl.className='prompt-ja'; jaEl.textContent=q.mean;
     const sub=document.createElement('div'); sub.className='prompt-sub';
-    sub.textContent = isListening ? 'これに合うヘブル語の発音はどれ？（選択肢は文字表示）' : 'これに合うヘブル語はどれ？';
+    sub.textContent = 'これに合うヘブル語はどれ？';
     promptWrap.appendChild(jaEl); promptWrap.appendChild(sub);
   }
 
@@ -532,8 +533,13 @@ function renderQuestion(){
   currentOptions.forEach(opt=>{
     const b=document.createElement('button'); b.className='opt';
     if(isH2J){
-      const jp=document.createElement('span'); jp.className='opt-jp'; jp.textContent=opt.item.mean;
-      b.appendChild(jp);
+      if(isWordCat){
+        const rd=document.createElement('span'); rd.className='opt-jp'; rd.textContent=readStr(opt.item);
+        b.appendChild(rd);
+      } else {
+        const jp=document.createElement('span'); jp.className='opt-jp'; jp.textContent=opt.item.mean;
+        b.appendChild(jp);
+      }
     } else {
       const heb=document.createElement('span'); heb.className='opt-heb'; heb.textContent=opt.item.heb;
       const read=document.createElement('span'); read.className='opt-read'; read.textContent=readStr(opt.item);
@@ -550,6 +556,7 @@ function selectOption(btn,opt,q){
   if(quizState.answered) return;
   quizState.answered = true;
   const isH2J = quizState.direction==='h2j';
+  const isWordCat = quizState.catKey==='3ab';
   document.querySelectorAll('#q-options .opt').forEach(b=>b.disabled=true);
   const fb = document.getElementById('q-feedback');
   if(opt.correct){
@@ -559,15 +566,20 @@ function selectOption(btn,opt,q){
     btn.classList.add('wrong');
     document.querySelectorAll('#q-options .opt').forEach(b=>{
       const isCorrectBtn = isH2J
-        ? (b.querySelector('.opt-jp') && b.querySelector('.opt-jp').textContent===q.mean)
+        ? (b.querySelector('.opt-jp') && b.querySelector('.opt-jp').textContent===(isWordCat?readStr(q):q.mean))
         : (b.querySelector('.opt-heb') && b.querySelector('.opt-heb').textContent===q.heb);
       if(isCorrectBtn) b.classList.add('reveal');
     });
-    fb.innerHTML = isH2J ? ('不正解。正解: <b>'+q.mean+'</b>') : ('不正解。正解: <b class="fb-heb">'+q.heb+'</b>　'+readStr(q));
+    if(isH2J){
+      fb.innerHTML = isWordCat ? ('不正解。正解: <b>'+readStr(q)+'</b>') : ('不正解。正解: <b>'+q.mean+'</b>');
+    } else {
+      fb.innerHTML = '不正解。正解: <b class="fb-heb">'+q.heb+'</b>　'+readStr(q);
+    }
   }
   if(!isH2J || quizState.format!=='listening'){
     fb.innerHTML += '<div style="margin-top:8px;" class="fb-heb">'+q.heb+'　<span style="color:var(--parchment-dim);font-size:11px;">'+readStr(q)+'</span></div>';
   }
+  if(isWordCat){ fb.innerHTML += '<div style="margin-top:4px;font-size:12px;color:var(--parchment-dim);">意味: '+q.mean+'</div>'; }
   if(q.note){ fb.innerHTML += '<span class="fb-note">※'+q.note+'</span>'; }
   if(q.ref){ fb.innerHTML += '<div style="margin-top:4px;font-size:11px;color:var(--parchment-dim);">'+q.ref+'</div>'; }
 
