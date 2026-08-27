@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>שרש探し — 創世記1章 語根収集ゲーム</title>
+<style>
+  :root{
+    --parchment:#EFE6D2;
+    --parchment-dark:#E3D6B8;
+    --ink:#2B2118;
+    --ink-soft:#5A4B3A;
+    --gold:#9C7A2E;
+    --gold-glow: 156,122,46;
+    --miss:#7A3B32;
+    --miss-glow: 122,59,50;
+    --line:#C9B98F;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse at top left, rgba(0,0,0,0.03), transparent 60%),
+      var(--parchment);
+    color:var(--ink);
+    font-family: "Frank Ruhl Libre","Times New Roman","David","SBL Hebrew",serif;
+    min-height:100vh;
+    padding:18px 12px 60px;
+  }
+  .wrap{max-width:760px;margin:0 auto;}
+
+  header{
+    text-align:center;
+    margin-bottom:14px;
+  }
+  .eyebrow{
+    font-family: -apple-system, "Hiragino Sans", sans-serif;
+    letter-spacing:0.14em;
+    font-size:11px;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+  }
+  h1{
+    font-size:26px;
+    margin:4px 0 2px;
+    font-weight:600;
+    letter-spacing:0.02em;
+  }
+  .sub{
+    font-family: -apple-system, "Hiragino Sans", sans-serif;
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+
+  .panel{
+    background:rgba(255,255,255,0.35);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px 16px;
+    margin-bottom:16px;
+  }
+
+  .control-row{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    flex-wrap:wrap;
+    font-family: -apple-system, "Hiragino Sans", sans-serif;
+  }
+  .control-row label{font-size:13px;color:var(--ink-soft);}
+  select{
+    font-family: -apple-system, "Hiragino Sans", sans-serif;
+    font-size:14px;
+    padding:7px 10px;
+    border-radius:7px;
+    border:1px solid var(--line);
+    background:var(--parchment);
+    color:var(--ink);
+    flex:1;
+    min-width:160px;
+  }
+  button{
+    font-family: -apple-system, "Hiragino Sans", sans-serif;
+    font-size:13px;
+    padding:8px 14px;
+    border-radius:7px;
+    border:1px solid var(--gold);
+    background:transparent;
+    color:var(--gold);
+    cursor:pointer;
+  }
+  button:active{transform:translateY(1px);}
+
+  .target-display{
+    margin-top:12px;
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  .target-root{
+    font-size:30px;
+    letter-spacing:0.06em;
+    direction:rtl;
+  }
+  .target-meta{
+    font-family: -apple-system, "Hiragino Sans", sans-serif;
+    font-size:12px;
+    color:var(--ink-soft);
+    line-height:1.5;
+  }
+  .badge{
+    display:inline-block;
+    font-size:10px;
+    padding:1px 6px;
+    border-radius:10px;
+    margin-inline-start:4px;
+    vertical-align:middle;
+  }
+  .badge.high{background:#4d6b4d33;color:#3a5a3a;}
+  .badge.estimated{background:#8a5a2233;color:#7a4a1a;}
+
+  .progress-row{
+    margin-top:10px;
+    font-family: -apple-system, "Hiragino Sans", sans-serif;
+    font-size:13px;
+    color:var(--ink-soft);
+    display:flex;
+    justify-content:space-between;
+  }
+  .progress-bar{
+    height:6px;
+    border-radius:4px;
+    background:var(--parchment-dark);
+    overflow:hidden;
+    margin-top:6px;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--gold);
+    width:0%;
+    transition:width .35s ease;
+  }
+
+  .text-panel{
+    background:rgba(255,255,255,0.4);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:22px 20px;
+    direction:rtl;
+    line-height:2.5;
+    font-size:22px;
+  }
+  .verse{margin-bottom:4px;}
+  .vnum{
+    font-family: -apple-system, "Hiragino Sans", sans-serif;
+    font-size:11px;
+    color:var(--ink-soft);
+    vertical-align:super;
+    margin-inline-start:2px;
+  }
+  .word{
+    cursor:pointer;
+    padding:1px 3px;
+    border-radius:5px;
+    transition: background .25s ease, color .25s ease, transform .15s ease;
+    display:inline-block;
+  }
+  .word.plain:hover{background:rgba(0,0,0,0.04);}
+  .word.found{
+    color:#4a3510;
+    background: rgba(var(--gold-glow), 0.28);
+    text-shadow: 0 0 8px rgba(var(--gold-glow),0.5);
+  }
+  .word.miss-flash{
+    background: rgba(var(--miss-glow), 0.30);
+    animation: shake .3s ease;
+  }
+  @keyframes shake{
+    0%,100%{transform:translateX(0);}
+    25%{transform:translateX(-2px);}
+    75%{transform:translateX(2px);}
+  }
+
+  .toast{
+    position:fixed;
+    left:50%;
+    bottom:24px;
+    transform:translateX(-50%) translateY(10px);
+    background:var(--ink);
+    color:var(--parchment);
+    font-family: -apple-system, "Hiragino Sans", sans-serif;
+    font-size:13px;
+    padding:10px 18px;
+    border-radius:8px;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease;
+    max-width:80%;
+    text-align:center;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  .clear-banner{
+    display:none;
+    margin-top:16px;
+    padding:16px;
+    border-radius:10px;
+    background:rgba(var(--gold-glow),0.15);
+    border:1px solid var(--gold);
+    font-family: -apple-system, "Hiragino Sans", sans-serif;
+    font-size:13px;
+    color:var(--ink-soft);
+    line-height:1.6;
+  }
+  .clear-banner.show{display:block;}
+  .clear-banner b{color:var(--ink);font-size:15px;}
+
+  footer{
+    text-align:center;
+    font-family: -apple-system, "Hiragino Sans", sans-serif;
+    font-size:11px;
+    color:var(--ink-soft);
+    margin-top:24px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Genesis 1:1–2:3 · Hebrew Root Hunt</div>
+    <h1>שֹׁרֶשׁ 探し</h1>
+    <div class="sub">創世記1章〜2章3節：同じ語根（シェレシュ）の単語をすべてタップして集めよう</div>
+  </header>
+
+  <div class="panel">
+    <div class="control-row">
+      <label for="rootSelect">対象の語根</label>
+      <select id="rootSelect"></select>
+      <button id="newBtn">別の語根で</button>
+    </div>
+    <div class="target-display">
+      <div class="target-root" id="targetRoot">—</div>
+      <div class="target-meta" id="targetMeta"></div>
+    </div>
+    <div class="progress-row">
+      <span id="progressText">0 / 0</span>
+      <span id="missText">誤タップ 0</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="clear-banner" id="clearBanner"></div>
+  </div>
+
+  <div class="text-panel" id="textPanel"></div>
+
+  <footer>逐語訳データに基づく語根推定。一部の語根は学術的に確定していない推定（右上バッジ「推定」）を含む。</footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="game_data.js"></script>
+<script>
+(function(){
+  const DATA = window.GENESIS1_DATA;
+  const roots = DATA.roots.filter(r => r.count >= 2); // 1回のみの語根はゲームとして成立しないため除外
+  const textPanel = document.getElementById('textPanel');
+  const rootSelect = document.getElementById('rootSelect');
+  const targetRootEl = document.getElementById('targetRoot');
+  const targetMetaEl = document.getElementById('targetMeta');
+  const progressText = document.getElementById('progressText');
+  const missText = document.getElementById('missText');
+  const progressFill = document.getElementById('progressFill');
+  const clearBanner = document.getElementById('clearBanner');
+  const toastEl = document.getElementById('toast');
+
+  let currentRoot = null;
+  let totalTargets = 0;
+  let foundCount = 0;
+  let missCount = 0;
+  let wordSpans = []; // all spans with dataset.root
+
+  // build root <select>
+  roots.forEach(r => {
+    const opt = document.createElement('option');
+    opt.value = r.root;
+    opt.textContent = `${r.root}（${r.count}回）`;
+    rootSelect.appendChild(opt);
+  });
+
+  function showToast(msg, ms=1400){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(()=>toastEl.classList.remove('show'), ms);
+  }
+
+  function renderText(){
+    textPanel.innerHTML = '';
+    wordSpans = [];
+    DATA.verses.forEach(v => {
+      const verseDiv = document.createElement('div');
+      verseDiv.className = 'verse';
+      const vnum = document.createElement('span');
+      vnum.className = 'vnum';
+      vnum.textContent = `${v.ch}:${v.v}`;
+      verseDiv.appendChild(vnum);
+      verseDiv.appendChild(document.createTextNode(' '));
+      v.w.forEach(word => {
+        const span = document.createElement('span');
+        span.textContent = word.s;
+        span.className = 'word ' + (word.r ? 'taggable' : 'plain');
+        if(word.r) span.dataset.root = word.r;
+        span.dataset.gloss = word.g || '';
+        span.addEventListener('click', onWordClick);
+        verseDiv.appendChild(span);
+        verseDiv.appendChild(document.createTextNode(' '));
+        wordSpans.push(span);
+      });
+      textPanel.appendChild(verseDiv);
+    });
+  }
+
+  function setTarget(rootKey){
+    currentRoot = rootKey;
+    const info = roots.find(r => r.root === rootKey);
+    targetRootEl.textContent = rootKey;
+    let meta = `全 ${info.count} 回`;
+    let badge = `<span class="badge ${info.conf}">${info.conf==='high' ? '確度：高' : '推定'}</span>`;
+    targetMetaEl.innerHTML = meta + badge + (info.note ? `<br>${info.note}` : '');
+    totalTargets = info.count;
+    foundCount = 0;
+    missCount = 0;
+    updateProgress();
+    clearBanner.classList.remove('show');
+    clearBanner.innerHTML = '';
+    wordSpans.forEach(span => {
+      span.classList.remove('found');
+      span.classList.remove('miss-flash');
+    });
+  }
+
+  function updateProgress(){
+    progressText.textContent = `${foundCount} / ${totalTargets}`;
+    missText.textContent = `誤タップ ${missCount}`;
+    progressFill.style.width = totalTargets ? `${(foundCount/totalTargets)*100}%` : '0%';
+  }
+
+  function onWordClick(e){
+    const span = e.currentTarget;
+    if(!currentRoot) return;
+    if(span.classList.contains('found')) return; // 既に見つけた語
+    if(span.dataset.root === currentRoot){
+      span.classList.add('found');
+      foundCount++;
+      updateProgress();
+      if(foundCount === totalTargets){
+        onClear();
+      }
+    } else {
+      span.classList.add('miss-flash');
+      missCount++;
+      updateProgress();
+      setTimeout(()=>span.classList.remove('miss-flash'), 300);
+      if(span.dataset.root){
+        showToast(`これは別の語根（${span.dataset.root}）— ${span.dataset.gloss}`);
+      } else {
+        showToast('この語は対象外（前置詞・接続詞など）');
+      }
+    }
+  }
+
+  function onClear(){
+    const info = roots.find(r => r.root === currentRoot);
+    clearBanner.innerHTML = `<b>${currentRoot}</b> 系列を全て収集した（${totalTargets}回）。${info.note ? '<br>注記：' + info.note : ''}`;
+    clearBanner.classList.add('show');
+  }
+
+  function pickRandomRoot(excludeCurrent){
+    const pool = roots.filter(r => r.root !== excludeCurrent);
+    return pool[Math.floor(Math.random()*pool.length)].root;
+  }
+
+  rootSelect.addEventListener('change', () => setTarget(rootSelect.value));
+  document.getElementById('newBtn').addEventListener('click', () => {
+    const r = pickRandomRoot(currentRoot);
+    rootSelect.value = r;
+    setTarget(r);
+  });
+
+  renderText();
+  // default: ברא if present, else first
+  const defaultRoot = roots.find(r => r.root === 'ברא') ? 'ברא' : roots[0].root;
+  rootSelect.value = defaultRoot;
+  setTarget(defaultRoot);
+})();
+</script>
+</body>
+</html>
