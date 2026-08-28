@@ -15,6 +15,7 @@
     --miss:#7A3B32;
     --miss-glow: 122,59,50;
     --line:#C9B98F;
+    --ui-font: -apple-system, "Hiragino Sans", "Yu Gothic", sans-serif;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -25,146 +26,149 @@
     color:var(--ink);
     font-family: "Frank Ruhl Libre","Times New Roman","David","SBL Hebrew",serif;
     min-height:100vh;
-    padding:18px 12px 60px;
+    padding:18px 12px 100px;
+    font-size:17px;
   }
-  .wrap{max-width:760px;margin:0 auto;}
+  .wrap{max-width:800px;margin:0 auto;}
 
-  header{
-    text-align:center;
-    margin-bottom:14px;
-  }
+  header{ text-align:center; margin-bottom:14px; }
   .eyebrow{
-    font-family: -apple-system, "Hiragino Sans", sans-serif;
+    font-family: var(--ui-font);
     letter-spacing:0.14em;
-    font-size:11px;
+    font-size:12px;
     color:var(--ink-soft);
     text-transform:uppercase;
   }
-  h1{
-    font-size:26px;
-    margin:4px 0 2px;
-    font-weight:600;
-    letter-spacing:0.02em;
-  }
-  .sub{
-    font-family: -apple-system, "Hiragino Sans", sans-serif;
-    font-size:13px;
-    color:var(--ink-soft);
-  }
+  h1{ font-size:30px; margin:6px 0 4px; font-weight:600; letter-spacing:0.02em; }
+  .sub{ font-family: var(--ui-font); font-size:15px; color:var(--ink-soft); }
 
   .panel{
     background:rgba(255,255,255,0.35);
     border:1px solid var(--line);
-    border-radius:10px;
-    padding:14px 16px;
-    margin-bottom:16px;
+    border-radius:12px;
+    padding:16px 18px;
+    margin-bottom:18px;
   }
 
   .control-row{
-    display:flex;
-    gap:10px;
-    align-items:center;
-    flex-wrap:wrap;
-    font-family: -apple-system, "Hiragino Sans", sans-serif;
+    display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    font-family: var(--ui-font);
   }
-  .control-row label{font-size:13px;color:var(--ink-soft);}
+  .control-row label{font-size:15px;color:var(--ink-soft);}
   select{
-    font-family: -apple-system, "Hiragino Sans", sans-serif;
-    font-size:14px;
-    padding:7px 10px;
-    border-radius:7px;
+    font-family: var(--ui-font);
+    font-size:17px;
+    padding:10px 12px;
+    border-radius:8px;
     border:1px solid var(--line);
     background:var(--parchment);
     color:var(--ink);
     flex:1;
-    min-width:160px;
+    min-width:180px;
   }
   button{
-    font-family: -apple-system, "Hiragino Sans", sans-serif;
-    font-size:13px;
-    padding:8px 14px;
-    border-radius:7px;
+    font-family: var(--ui-font);
+    font-size:15px;
+    padding:10px 16px;
+    border-radius:8px;
     border:1px solid var(--gold);
     background:transparent;
     color:var(--gold);
     cursor:pointer;
   }
+  button.solid{
+    background:var(--gold);
+    color:#fff;
+    border-color:var(--gold);
+  }
   button:active{transform:translateY(1px);}
 
-  .target-display{
-    margin-top:12px;
-    display:flex;
-    align-items:baseline;
-    gap:12px;
-    flex-wrap:wrap;
-  }
-  .target-root{
-    font-size:30px;
-    letter-spacing:0.06em;
-    direction:rtl;
-  }
-  .target-meta{
-    font-family: -apple-system, "Hiragino Sans", sans-serif;
-    font-size:12px;
-    color:var(--ink-soft);
-    line-height:1.5;
-  }
+  .target-display{ margin-top:14px; display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; }
+  .target-root{ font-size:38px; letter-spacing:0.06em; direction:rtl; }
+  .target-meta{ font-family: var(--ui-font); font-size:14px; color:var(--ink-soft); line-height:1.6; }
   .badge{
-    display:inline-block;
-    font-size:10px;
-    padding:1px 6px;
-    border-radius:10px;
-    margin-inline-start:4px;
-    vertical-align:middle;
+    display:inline-block; font-size:12px; padding:2px 8px; border-radius:10px;
+    margin-inline-start:4px; vertical-align:middle;
   }
   .badge.high{background:#4d6b4d33;color:#3a5a3a;}
   .badge.estimated{background:#8a5a2233;color:#7a4a1a;}
 
   .progress-row{
-    margin-top:10px;
-    font-family: -apple-system, "Hiragino Sans", sans-serif;
-    font-size:13px;
-    color:var(--ink-soft);
-    display:flex;
-    justify-content:space-between;
+    margin-top:12px; font-family: var(--ui-font); font-size:15px; color:var(--ink-soft);
+    display:flex; justify-content:space-between;
   }
-  .progress-bar{
-    height:6px;
-    border-radius:4px;
-    background:var(--parchment-dark);
+  .progress-bar{ height:8px; border-radius:4px; background:var(--parchment-dark); overflow:hidden; margin-top:8px; }
+  .progress-fill{ height:100%; background:var(--gold); width:0%; transition:width .35s ease; }
+
+  /* 常時表示される小さな進捗ウィンドウ */
+  .float-widget{
+    position:fixed;
+    top:14px;
+    right:14px;
+    z-index:50;
+    background:rgba(43,33,24,0.92);
+    color:var(--parchment);
+    font-family: var(--ui-font);
+    border-radius:14px;
+    padding:8px 14px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.25);
+    text-align:center;
+    min-width:84px;
+    backdrop-filter: blur(2px);
+  }
+  .float-widget .fw-root{
+    font-family: "Frank Ruhl Libre","Times New Roman",serif;
+    direction:rtl;
+    font-size:16px;
+    line-height:1.1;
+    margin-bottom:2px;
+    opacity:0.9;
+  }
+  .float-widget .fw-count{
+    font-size:20px;
+    font-weight:700;
+    line-height:1.1;
+  }
+  .float-widget .fw-bar{
+    height:4px;
+    border-radius:3px;
+    background:rgba(255,255,255,0.25);
+    margin-top:5px;
     overflow:hidden;
-    margin-top:6px;
   }
-  .progress-fill{
+  .float-widget .fw-fill{
     height:100%;
-    background:var(--gold);
+    background:#e9c873;
     width:0%;
-    transition:width .35s ease;
+    transition:width .3s ease;
   }
 
   .text-panel{
     background:rgba(255,255,255,0.4);
     border:1px solid var(--line);
-    border-radius:10px;
-    padding:22px 20px;
+    border-radius:12px;
+    padding:26px 22px;
     direction:rtl;
-    line-height:2.5;
-    font-size:22px;
+    line-height:2.7;
+    font-size:27px;
+    -webkit-user-select:none;
+    user-select:none;
   }
-  .verse{margin-bottom:4px;}
+  .verse{margin-bottom:6px;}
   .vnum{
-    font-family: -apple-system, "Hiragino Sans", sans-serif;
-    font-size:11px;
+    font-family: var(--ui-font);
+    font-size:13px;
     color:var(--ink-soft);
     vertical-align:super;
-    margin-inline-start:2px;
+    margin-inline-start:3px;
   }
   .word{
     cursor:pointer;
-    padding:1px 3px;
-    border-radius:5px;
+    padding:3px 5px;
+    border-radius:6px;
     transition: background .25s ease, color .25s ease, transform .15s ease;
     display:inline-block;
+    touch-action: pan-y;
   }
   .word.plain:hover{background:rgba(0,0,0,0.04);}
   .word.found{
@@ -183,49 +187,103 @@
   }
 
   .toast{
-    position:fixed;
-    left:50%;
-    bottom:24px;
-    transform:translateX(-50%) translateY(10px);
-    background:var(--ink);
-    color:var(--parchment);
-    font-family: -apple-system, "Hiragino Sans", sans-serif;
-    font-size:13px;
-    padding:10px 18px;
-    border-radius:8px;
-    opacity:0;
-    pointer-events:none;
+    position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(10px);
+    background:var(--ink); color:var(--parchment);
+    font-family: var(--ui-font); font-size:15px;
+    padding:12px 20px; border-radius:9px;
+    opacity:0; pointer-events:none;
     transition:opacity .25s ease, transform .25s ease;
-    max-width:80%;
-    text-align:center;
+    max-width:85%; text-align:center; z-index:80;
   }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
-  .clear-banner{
+  footer{
+    text-align:center; font-family: var(--ui-font); font-size:12px;
+    color:var(--ink-soft); margin-top:24px;
+  }
+
+  /* リザルト画面 */
+  .result-overlay{
     display:none;
-    margin-top:16px;
-    padding:16px;
+    position:fixed; inset:0; z-index:100;
+    background:rgba(20,15,10,0.55);
+    align-items:center; justify-content:center;
+    padding:20px;
+  }
+  .result-overlay.show{display:flex;}
+  .result-card{
+    background:var(--parchment);
+    border:1px solid var(--line);
+    border-radius:16px;
+    max-width:520px;
+    width:100%;
+    max-height:88vh;
+    overflow-y:auto;
+    padding:26px 24px;
+    font-family: var(--ui-font);
+    box-shadow:0 12px 40px rgba(0,0,0,0.35);
+  }
+  .result-eyebrow{
+    font-size:12px; letter-spacing:0.12em; color:var(--ink-soft); text-transform:uppercase;
+  }
+  .result-root{
+    font-family:"Frank Ruhl Libre","Times New Roman",serif;
+    direction:rtl;
+    font-size:46px;
+    margin:6px 0 2px;
+  }
+  .result-sub{ font-size:14px; color:var(--ink-soft); margin-bottom:16px; }
+  .stat-grid{
+    display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:18px;
+  }
+  .stat-box{
+    background:rgba(255,255,255,0.5);
+    border:1px solid var(--line);
     border-radius:10px;
-    background:rgba(var(--gold-glow),0.15);
-    border:1px solid var(--gold);
-    font-family: -apple-system, "Hiragino Sans", sans-serif;
+    padding:10px 6px;
+    text-align:center;
+  }
+  .stat-box .num{ font-size:22px; font-weight:700; color:var(--ink); }
+  .stat-box .lbl{ font-size:11px; color:var(--ink-soft); margin-top:2px;}
+  .learn-section{
+    background:rgba(255,255,255,0.5);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px 16px;
+    margin-bottom:14px;
+    font-size:14px;
+    line-height:1.7;
+    color:var(--ink);
+  }
+  .learn-section h3{
+    margin:0 0 8px;
     font-size:13px;
     color:var(--ink-soft);
-    line-height:1.6;
+    letter-spacing:0.04em;
   }
-  .clear-banner.show{display:block;}
-  .clear-banner b{color:var(--ink);font-size:15px;}
-
-  footer{
-    text-align:center;
-    font-family: -apple-system, "Hiragino Sans", sans-serif;
-    font-size:11px;
-    color:var(--ink-soft);
-    margin-top:24px;
+  .learn-section .heb{ direction:rtl; font-family:"Frank Ruhl Libre",serif; font-size:17px; }
+  .verse-tags{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+  .verse-tag{
+    background:rgba(var(--gold-glow),0.18);
+    border:1px solid var(--gold);
+    color:var(--ink);
+    font-size:12px;
+    padding:2px 8px;
+    border-radius:8px;
   }
+  .confuse-row{ display:flex; justify-content:space-between; padding:3px 0; }
+  .result-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:6px; }
+  .result-actions button{ flex:1; min-width:120px; }
 </style>
 </head>
 <body>
+
+<div class="float-widget" id="floatWidget">
+  <div class="fw-root" id="fwRoot">—</div>
+  <div class="fw-count" id="fwCount">0 / 0</div>
+  <div class="fw-bar"><div class="fw-fill" id="fwFill"></div></div>
+</div>
+
 <div class="wrap">
 
   <header>
@@ -236,9 +294,11 @@
 
   <div class="panel">
     <div class="control-row">
-      <label for="rootSelect">対象の語根</label>
+      <label for="rootSelect">自分で選ぶ</label>
       <select id="rootSelect"></select>
-      <button id="newBtn">別の語根で</button>
+    </div>
+    <div class="control-row" style="margin-top:10px;">
+      <button id="randomBtn" class="solid">🎲 ランダムに出題してもらう</button>
     </div>
     <div class="target-display">
       <div class="target-root" id="targetRoot">—</div>
@@ -249,21 +309,24 @@
       <span id="missText">誤タップ 0</span>
     </div>
     <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-    <div class="clear-banner" id="clearBanner"></div>
   </div>
 
   <div class="text-panel" id="textPanel"></div>
 
-  <footer>逐語訳データに基づく語根推定。一部の語根は学術的に確定していない推定（右上バッジ「推定」）を含む。</footer>
+  <footer>逐語訳データに基づく語根推定。一部の語根は学術的に確定していない推定（バッジ「推定」表示）を含む。</footer>
 </div>
 
 <div class="toast" id="toast"></div>
+
+<div class="result-overlay" id="resultOverlay">
+  <div class="result-card" id="resultCard"></div>
+</div>
 
 <script src="game_data.js"></script>
 <script>
 (function(){
   const DATA = window.GENESIS1_DATA;
-  const roots = DATA.roots.filter(r => r.count >= 2); // 1回のみの語根はゲームとして成立しないため除外
+  const roots = DATA.roots.filter(r => r.count >= 2);
   const textPanel = document.getElementById('textPanel');
   const rootSelect = document.getElementById('rootSelect');
   const targetRootEl = document.getElementById('targetRoot');
@@ -271,16 +334,22 @@
   const progressText = document.getElementById('progressText');
   const missText = document.getElementById('missText');
   const progressFill = document.getElementById('progressFill');
-  const clearBanner = document.getElementById('clearBanner');
   const toastEl = document.getElementById('toast');
+  const fwRoot = document.getElementById('fwRoot');
+  const fwCount = document.getElementById('fwCount');
+  const fwFill = document.getElementById('fwFill');
+  const resultOverlay = document.getElementById('resultOverlay');
+  const resultCard = document.getElementById('resultCard');
 
   let currentRoot = null;
   let totalTargets = 0;
   let foundCount = 0;
   let missCount = 0;
-  let wordSpans = []; // all spans with dataset.root
+  let missByRoot = {};   // 誤タップで叩いた「他の語根」の内訳
+  let missNonTaggable = 0; // 対象外語（前置詞等）への誤タップ
+  let wordSpans = [];
+  let usedRoots = []; // ランダム出題の重複回避用
 
-  // build root <select>
   roots.forEach(r => {
     const opt = document.createElement('option');
     opt.value = r.root;
@@ -293,6 +362,31 @@
     toastEl.classList.add('show');
     clearTimeout(showToast._t);
     showToast._t = setTimeout(()=>toastEl.classList.remove('show'), ms);
+  }
+
+  // ---- タップ判定（スクロール中の誤タップ対策） ----
+  // pointerdown〜pointerup の移動距離・経過時間を見て、
+  // 「指を動かさず短時間で離した」場合のみタップとして扱う。
+  const TAP_MOVE_LIMIT = 10;  // px
+  const TAP_TIME_LIMIT = 450; // ms
+
+  function attachTapHandler(span){
+    let sx=0, sy=0, st=0, tracking=false;
+    span.addEventListener('pointerdown', (e) => {
+      sx = e.clientX; sy = e.clientY; st = Date.now(); tracking = true;
+    }, {passive:true});
+    span.addEventListener('pointercancel', () => { tracking = false; });
+    span.addEventListener('pointerup', (e) => {
+      if(!tracking) return;
+      tracking = false;
+      const dx = Math.abs(e.clientX - sx);
+      const dy = Math.abs(e.clientY - sy);
+      const dt = Date.now() - st;
+      if(dx <= TAP_MOVE_LIMIT && dy <= TAP_MOVE_LIMIT && dt <= TAP_TIME_LIMIT){
+        onWordTap(span);
+      }
+      // 条件を満たさない場合＝スクロール操作とみなし、無視する
+    });
   }
 
   function renderText(){
@@ -312,7 +406,8 @@
         span.className = 'word ' + (word.r ? 'taggable' : 'plain');
         if(word.r) span.dataset.root = word.r;
         span.dataset.gloss = word.g || '';
-        span.addEventListener('click', onWordClick);
+        span.dataset.verse = `${v.ch}:${v.v}`;
+        attachTapHandler(span);
         verseDiv.appendChild(span);
         verseDiv.appendChild(document.createTextNode(' '));
         wordSpans.push(span);
@@ -325,15 +420,17 @@
     currentRoot = rootKey;
     const info = roots.find(r => r.root === rootKey);
     targetRootEl.textContent = rootKey;
+    fwRoot.textContent = rootKey;
     let meta = `全 ${info.count} 回`;
     let badge = `<span class="badge ${info.conf}">${info.conf==='high' ? '確度：高' : '推定'}</span>`;
     targetMetaEl.innerHTML = meta + badge + (info.note ? `<br>${info.note}` : '');
     totalTargets = info.count;
     foundCount = 0;
     missCount = 0;
+    missByRoot = {};
+    missNonTaggable = 0;
     updateProgress();
-    clearBanner.classList.remove('show');
-    clearBanner.innerHTML = '';
+    resultOverlay.classList.remove('show');
     wordSpans.forEach(span => {
       span.classList.remove('found');
       span.classList.remove('miss-flash');
@@ -343,53 +440,136 @@
   function updateProgress(){
     progressText.textContent = `${foundCount} / ${totalTargets}`;
     missText.textContent = `誤タップ ${missCount}`;
-    progressFill.style.width = totalTargets ? `${(foundCount/totalTargets)*100}%` : '0%';
+    const pct = totalTargets ? (foundCount/totalTargets)*100 : 0;
+    progressFill.style.width = `${pct}%`;
+    fwCount.textContent = `${foundCount} / ${totalTargets}`;
+    fwFill.style.width = `${pct}%`;
   }
 
-  function onWordClick(e){
-    const span = e.currentTarget;
+  function onWordTap(span){
     if(!currentRoot) return;
-    if(span.classList.contains('found')) return; // 既に見つけた語
+    if(span.classList.contains('found')) return;
     if(span.dataset.root === currentRoot){
       span.classList.add('found');
       foundCount++;
       updateProgress();
       if(foundCount === totalTargets){
-        onClear();
+        setTimeout(showResult, 350); // 発見アニメーションを見せてから表示
       }
     } else {
       span.classList.add('miss-flash');
       missCount++;
-      updateProgress();
-      setTimeout(()=>span.classList.remove('miss-flash'), 300);
       if(span.dataset.root){
-        showToast(`これは別の語根（${span.dataset.root}）— ${span.dataset.gloss}`);
+        missByRoot[span.dataset.root] = (missByRoot[span.dataset.root]||0) + 1;
+        showToast(`これは別の語根「${span.dataset.root}」— ${span.dataset.gloss}`);
       } else {
+        missNonTaggable++;
         showToast('この語は対象外（前置詞・接続詞など）');
       }
+      updateProgress();
+      setTimeout(()=>span.classList.remove('miss-flash'), 300);
     }
   }
 
-  function onClear(){
-    const info = roots.find(r => r.root === currentRoot);
-    clearBanner.innerHTML = `<b>${currentRoot}</b> 系列を全て収集した（${totalTargets}回）。${info.note ? '<br>注記：' + info.note : ''}`;
-    clearBanner.classList.add('show');
+  function pickRandomRoot(){
+    let pool = roots.filter(r => r.root !== currentRoot && !usedRoots.includes(r.root));
+    if(pool.length === 0){ usedRoots = []; pool = roots.filter(r => r.root !== currentRoot); }
+    const pick = pool[Math.floor(Math.random()*pool.length)];
+    usedRoots.push(pick.root);
+    return pick.root;
   }
 
-  function pickRandomRoot(excludeCurrent){
-    const pool = roots.filter(r => r.root !== excludeCurrent);
-    return pool[Math.floor(Math.random()*pool.length)].root;
+  function verseListFor(rootKey){
+    const list = [];
+    DATA.verses.forEach(v => {
+      if(v.w.some(w => w.r === rootKey)) list.push(`${v.ch}:${v.v}`);
+    });
+    return list;
+  }
+
+  function showResult(){
+    const info = roots.find(r => r.root === currentRoot);
+    const accuracy = (foundCount + missCount) > 0
+      ? Math.round((foundCount/(foundCount+missCount))*100)
+      : 100;
+    const verses = verseListFor(currentRoot);
+
+    // まぎらわしかった語根（実際に誤タップされたもの）を回数順に
+    const confuseEntries = Object.entries(missByRoot).sort((a,b)=>b[1]-a[1]);
+
+    let confuseHtml = '';
+    if(confuseEntries.length){
+      confuseHtml = `<div class="learn-section">
+        <h3>まぎらわしかった語根</h3>
+        ${confuseEntries.map(([r,c]) => {
+          const ri = DATA.roots.find(x=>x.root===r);
+          return `<div class="confuse-row"><span class="heb">${r}</span><span>${c}回タップ${ri && ri.note ? ' — ' + ri.note : ''}</span></div>`;
+        }).join('')}
+      </div>`;
+    } else if(missNonTaggable > 0){
+      confuseHtml = `<div class="learn-section">
+        <h3>まぎらわしかった語根</h3>
+        <div class="confuse-row"><span>前置詞・接続詞など対象外の語</span><span>${missNonTaggable}回タップ</span></div>
+      </div>`;
+    } else {
+      confuseHtml = `<div class="learn-section">
+        <h3>まぎらわしかった語根</h3>
+        <div>誤タップなし。<b class="heb">${currentRoot}</b> の形をしっかり見分けられている。</div>
+      </div>`;
+    }
+
+    resultCard.innerHTML = `
+      <div class="result-eyebrow">収集完了</div>
+      <div class="result-root">${currentRoot}</div>
+      <div class="result-sub">${info.note ? info.note : '同じ語根の単語を全て見つけた'}
+        <span class="badge ${info.conf}">${info.conf==='high' ? '確度：高' : '推定'}</span>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-box"><div class="num">${foundCount}/${totalTargets}</div><div class="lbl">収集数</div></div>
+        <div class="stat-box"><div class="num">${missCount}</div><div class="lbl">誤タップ</div></div>
+        <div class="stat-box"><div class="num">${accuracy}%</div><div class="lbl">正解率</div></div>
+      </div>
+
+      <div class="learn-section">
+        <h3>この語根が登場する節</h3>
+        <div class="verse-tags">
+          ${verses.map(v => `<span class="verse-tag">${v}</span>`).join('')}
+        </div>
+      </div>
+
+      ${confuseHtml}
+
+      <div class="result-actions">
+        <button id="retryBtn">同じ語根をもう一度</button>
+        <button id="randomNextBtn" class="solid">🎲 次はランダムで</button>
+      </div>
+      <div class="result-actions">
+        <button id="chooseBtn">自分で語根を選ぶ</button>
+      </div>
+    `;
+    resultOverlay.classList.add('show');
+
+    document.getElementById('retryBtn').onclick = () => setTarget(currentRoot);
+    document.getElementById('randomNextBtn').onclick = () => {
+      const r = pickRandomRoot();
+      rootSelect.value = r;
+      setTarget(r);
+    };
+    document.getElementById('chooseBtn').onclick = () => {
+      resultOverlay.classList.remove('show');
+      rootSelect.focus();
+    };
   }
 
   rootSelect.addEventListener('change', () => setTarget(rootSelect.value));
-  document.getElementById('newBtn').addEventListener('click', () => {
-    const r = pickRandomRoot(currentRoot);
+  document.getElementById('randomBtn').addEventListener('click', () => {
+    const r = pickRandomRoot();
     rootSelect.value = r;
     setTarget(r);
   });
 
   renderText();
-  // default: ברא if present, else first
   const defaultRoot = roots.find(r => r.root === 'ברא') ? 'ברא' : roots[0].root;
   rootSelect.value = defaultRoot;
   setTarget(defaultRoot);
