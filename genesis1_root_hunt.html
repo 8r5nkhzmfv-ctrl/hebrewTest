@@ -111,6 +111,48 @@
   .badge.high{background:#4d6b4d33;color:#3a5a3a;}
   .badge.estimated{background:#8a5a2233;color:#7a4a1a;}
 
+  /* クイズモード：出現箇所数を目立たせるバッジ */
+  .occur-badge{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    min-width:72px; min-height:72px;
+    background: linear-gradient(135deg, #C9432B, #E0673B);
+    color:#fff;
+    border-radius:18px;
+    padding:8px 12px;
+    box-shadow:0 4px 16px rgba(201,67,43,0.4);
+    animation: occurPulse 1.5s ease-in-out infinite;
+  }
+  .occur-badge .occur-num{
+    font-family: var(--ui-font);
+    font-size:32px; font-weight:800; line-height:1;
+  }
+  .occur-badge .occur-label{
+    font-family: var(--ui-font);
+    font-size:12px; margin-top:3px;
+  }
+  @keyframes occurPulse{
+    0%,100%{ transform: scale(1) rotate(0deg); }
+    50%{ transform: scale(1.1) rotate(-3deg); }
+  }
+
+  .quiz-explain{
+    display:none;
+    margin-top:12px;
+    padding:12px 14px;
+    border-radius:10px;
+    background:rgba(70,110,150,0.12);
+    border:1px solid #46709650;
+    font-family: var(--ui-font);
+    font-size:14px;
+    line-height:1.7;
+    color:var(--ink);
+  }
+  .quiz-explain.show{ display:block; }
+  .word.revealed{
+    background: rgba(70,110,150,0.30);
+    color:#22344a;
+  }
+
   .progress-row{
     margin-top:12px; font-family: var(--ui-font); font-size:15px; color:var(--ink-soft);
     display:flex; justify-content:space-between;
@@ -293,25 +335,69 @@
   .result-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:6px; }
   .result-actions button{ flex:1; min-width:120px; }
 
-  /* 解説モード */
-  .explain-block{
-    background:rgba(255,255,255,0.4);
+  /* 解説モード（フェーズ式） */
+  .phase-nav{
+    display:flex; justify-content:center; gap:10px;
+    margin-bottom:20px;
+  }
+  .phase-dot{
+    width:38px; height:38px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family: var(--ui-font); font-size:15px; font-weight:700;
+    background:rgba(255,255,255,0.5);
     border:1px solid var(--line);
-    border-radius:12px;
-    padding:18px 20px;
+    color:var(--ink-soft);
+    cursor:pointer;
+    transition: all .2s ease;
+  }
+  .phase-dot.active{ background:var(--gold); color:#fff; border-color:var(--gold); transform:scale(1.08); }
+  .phase-dot.done{ border-color:var(--gold); color:var(--gold); }
+  .phase-track{
+    height:3px; background:var(--parchment-dark); border-radius:2px;
+    max-width:280px; margin:-12px auto 20px; overflow:hidden;
+  }
+  .phase-track-fill{ height:100%; background:var(--gold); width:0%; transition:width .3s ease; }
+
+  .phase-card{
+    background:rgba(255,255,255,0.45);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:28px 24px;
     margin-bottom:16px;
     font-family: var(--ui-font);
     font-size:15px;
-    line-height:1.85;
+    line-height:1.9;
     color:var(--ink);
+    box-shadow:0 2px 10px rgba(0,0,0,0.04);
+    animation: phaseIn .3s ease;
   }
-  .explain-block h3{
-    margin:0 0 10px;
-    font-size:17px;
-    color:var(--ink);
+  @keyframes phaseIn{
+    from{ opacity:0; transform:translateY(6px); }
+    to{ opacity:1; transform:translateY(0); }
   }
-  .explain-block p{ margin:0 0 10px; }
-  .explain-block ul{ margin:0 0 10px; padding-inline-start:20px; }
+  .phase-icon{ font-size:32px; text-align:center; margin-bottom:6px; }
+  .phase-eyebrow{
+    text-align:center; font-size:12px; letter-spacing:0.16em;
+    text-transform:uppercase; color:var(--gold); font-weight:700;
+    margin-bottom:6px;
+  }
+  .phase-title{
+    text-align:center; font-size:21px; font-weight:700;
+    margin:0 0 18px; color:var(--ink);
+  }
+  .phase-card p{ margin:0 0 12px; }
+  .phase-card ul{ margin:0 0 12px; padding-inline-start:20px; }
+  .phase-divider{ border:none; border-top:1px solid var(--line); margin:16px 0; }
+
+  .phase-nav-buttons{
+    display:flex; justify-content:space-between; gap:10px;
+    margin-top:4px; margin-bottom:20px;
+  }
+  .phase-nav-buttons button{ flex:1; font-size:16px; padding:12px 16px; }
+  .phase-nav-buttons button:disabled{
+    opacity:0.35; cursor:default;
+  }
+
   .heb-inline{
     direction:rtl;
     unicode-bidi:isolate;
@@ -321,11 +407,16 @@
   }
   .root-letter{ color:#B0522D; font-weight:700; }
   .step-arrow{ color:var(--ink-soft); font-family: var(--ui-font); margin:0 8px; }
-  .step-row{ display:flex; align-items:center; flex-wrap:wrap; gap:4px; margin:10px 0; }
+  .step-row{
+    display:flex; align-items:center; justify-content:center;
+    flex-wrap:wrap; gap:8px; margin:14px 0;
+    background:rgba(255,255,255,0.5);
+    border-radius:10px; padding:10px 14px;
+  }
   #practicePanel .word{ cursor:pointer; }
   .practice-done{
     display:none;
-    margin-top:12px;
+    margin-top:14px;
     padding:12px 14px;
     border-radius:10px;
     background:rgba(var(--gold-glow),0.15);
@@ -390,8 +481,17 @@
       <div class="progress-bar"><div class="progress-fill" id="quizProgressFill"></div></div>
       <div class="target-display">
         <div class="target-root" id="quizTargetRoot">—</div>
+        <div class="occur-badge" id="quizOccurBadge">
+          <span class="occur-num" id="quizOccurNum">0</span>
+          <span class="occur-label">箇所</span>
+        </div>
         <div class="target-meta" id="quizTargetMeta"></div>
       </div>
+      <div class="control-row" style="margin-top:12px;">
+        <button id="quizGiveUpBtn">🏳️ ギブアップ（正解を見る）</button>
+        <button id="quizNextBtn" class="solid" style="display:none;">次の問題へ →</button>
+      </div>
+      <div class="quiz-explain" id="quizExplain"></div>
     </div>
 
     <div class="text-panel" id="quizVersePanel"></div>
@@ -399,15 +499,27 @@
 
   <div id="explainModeView" style="display:none;">
 
-    <div class="explain-block">
-      <h3>1️⃣ 語根（シェレシュ）とは何か</h3>
+    <div class="phase-nav" id="phaseNav">
+      <div class="phase-dot" data-phase="0">1</div>
+      <div class="phase-dot" data-phase="1">2</div>
+      <div class="phase-dot" data-phase="2">3</div>
+      <div class="phase-dot" data-phase="3">4</div>
+    </div>
+    <div class="phase-track"><div class="phase-track-fill" id="phaseTrackFill"></div></div>
+
+    <div class="phase-card" data-phase="0">
+      <div class="phase-icon">📘</div>
+      <div class="phase-eyebrow">Step 1 / 4</div>
+      <div class="phase-title">語根（シェレシュ）とは何か</div>
       <p>ヘブル語の単語の多くは、3つ（まれに2つや4つ）の子音からなる「語根」を土台にして作られる。語根そのものは単語ではなく、意味の芯となる抽象的な骨組み。</p>
       <p>そこに母音のパターンや接頭辞・接尾辞を組み合わせることで、動詞・名詞・形容詞など具体的な単語になる。骨組みが語根、肉付けが母音パターンや接辞、というイメージ。</p>
     </div>
 
-    <div class="explain-block">
-      <h3>2️⃣ 語根の例：<span class="heb-inline">ב־ר־א</span>（創る）</h3>
-      <p>この章の冒頭に出てくる語根<span class="heb-inline">ברא</span>（B-R-A）を例にする。</p>
+    <div class="phase-card" data-phase="1" style="display:none;">
+      <div class="phase-icon">🧩</div>
+      <div class="phase-eyebrow">Step 2 / 4</div>
+      <div class="phase-title">語根の例：<span class="heb-inline">ב־ר־א</span>（創る）</div>
+      <p>この章の冒頭に出てくる語根<span class="heb-inline">ברא</span>（B-R-A、意味：創造する）を例にする。</p>
       <div class="step-row">
         <span class="heb-inline">ב　ר　א</span>
         <span>語根そのもの（まだ発音も時制も確定しない）</span>
@@ -429,14 +541,18 @@
       <p>色のついた文字（<span class="root-letter">例</span>）が語根の3子音。形が変わっても、この3文字の骨組みは変わらない。</p>
     </div>
 
-    <div class="explain-block">
-      <h3>3️⃣ 実例：本文の中の<span class="heb-inline">ברא</span></h3>
+    <div class="phase-card" data-phase="2" style="display:none;">
+      <div class="phase-icon">📜</div>
+      <div class="phase-eyebrow">Step 3 / 4</div>
+      <div class="phase-title">実例：本文の中の<span class="heb-inline">ברא</span></div>
       <p>この語根は創世記1章〜2章3節の中に6回登場する。色のついた部分がすべて同じ語根。</p>
       <div id="exampleVerses"></div>
     </div>
 
-    <div class="explain-block">
-      <h3>4️⃣ 練習：<span class="heb-inline">ברא</span> をタップして探す</h3>
+    <div class="phase-card" data-phase="3" style="display:none;">
+      <div class="phase-icon">🎯</div>
+      <div class="phase-eyebrow">Step 4 / 4</div>
+      <div class="phase-title">練習：<span class="heb-inline">ברא</span> をタップして探す</div>
       <p>語根の3文字にあらかじめ色をつけてある。同じ色の形を持つ単語を、下の本文からすべてタップして見つける（全6箇所）。</p>
       <div class="progress-row" style="margin-top:6px;">
         <span id="practiceProgressText">0 / 6</span>
@@ -444,6 +560,11 @@
       </div>
       <div class="text-panel" id="practicePanel" style="margin-top:10px;"></div>
       <div class="practice-done" id="practiceDone"></div>
+    </div>
+
+    <div class="phase-nav-buttons">
+      <button id="phasePrevBtn">← 前へ</button>
+      <button id="phaseNextBtn" class="solid">次へ →</button>
     </div>
 
   </div>
@@ -462,6 +583,98 @@
 (function(){
   const DATA = window.GENESIS1_DATA;
   const roots = DATA.roots.filter(r => r.count >= 2);
+
+  // 各語根の日本語での意味（すべての語根に対応。html側のみで完結させるため、
+  // game_data.js側は変更せずここに保持する）
+  const ROOT_MEANINGS = {
+    'אלה':'神（エロヒームの語根、固有名的用法）',
+    'היה':'ある、なる',
+    'ארץ':'地、大地',
+    'כל':'すべて、全部',
+    'יום':'日',
+    'אור':'光',
+    'שמים':'天、空',
+    'מים':'水',
+    'אמר':'言う',
+    'עשה':'作る、行う',
+    'זרע':'種、種をまく',
+    'מין':'種類',
+    'רקע':'広げる、打ち延ばす（→大空）',
+    'ראה':'見る',
+    'חיה':'生きる、生き物',
+    'טוב':'良い',
+    'עוף':'飛ぶ、鳥',
+    'רמש':'はう、はうもの',
+    'ברא':'創造する',
+    'ערב':'夕方',
+    'בקר':'朝',
+    'כן':'そのように（副詞）',
+    'פרה':'実を結ぶ、実り豊かになる',
+    'בדל':'分ける、区別する',
+    'קרא':'呼ぶ、名づける',
+    'חשך':'暗い、暗闇',
+    'פנה':'顔、面、向く',
+    'לילה':'夜',
+    'ים':'海',
+    'עשב':'草',
+    'עץ':'木',
+    'נפש':'命、魂、生き物',
+    'דשא':'若草',
+    'גדל':'大きい、成長する',
+    'משל':'支配する',
+    'שרץ':'群がる、うようよ動く',
+    'ברך':'祝福する',
+    'רבה':'増える、多くなる',
+    'בהמה':'家畜',
+    'אדם':'人、（土に由来）',
+    'צלם':'像、似姿',
+    'שבע':'七',
+    'מלאכה':'仕事、業',
+    'אחד':'一つ',
+    'שנה(二)':'二つ、第二（数詞）',
+    'קוה':'集まる、望む、待ち望む',
+    'יבש':'乾く',
+    'יצא':'出る、出て来る',
+    'נתן':'与える',
+    'מלא':'満ちる、満たす',
+    'רדה':'治める、支配する',
+    'דג':'魚',
+    'הנה':'見よ（間投詞）',
+    'אכל':'食べる',
+    'כלה':'終わる、完成する',
+    'שבת':'休む、やめる',
+    'ראש':'頭、初め',
+    'תהו':'空虚、荒れ果てた',
+    'בהו':'何もない、空っぽ',
+    'תהם':'深い淵',
+    'רוח':'霊、風、息',
+    'רחף':'舞う、覆うように動く',
+    'תוך':'中、真ん中',
+    'קום':'立つ、起き上がる',
+    'שלש':'三',
+    'אות':'しるし',
+    'יעד':'定める、指定する',
+    'שנה(年)':'年',
+    'קטן':'小さい',
+    'כוכב':'星',
+    'רבע':'四',
+    'תנין':'海の巨獣、竜',
+    'כנף':'翼',
+    'חמש':'五',
+    'דמה':'似る、似せる',
+    'זכר':'男性',
+    'נקב':'女性、穴をあける',
+    'כבש':'従わせる、征服する',
+    'ירק':'青草、緑のもの',
+    'מאד':'非常に、とても',
+    'שש':'六',
+    'צבא':'大群、軍勢',
+    'קדש':'聖である、聖別する',
+  };
+  function meaningOf(rootKey){
+    return ROOT_MEANINGS[rootKey] || '（意味未登録）';
+  }
+
   const textPanel = document.getElementById('textPanel');
   const rootSelect = document.getElementById('rootSelect');
   const targetRootEl = document.getElementById('targetRoot');
@@ -486,6 +699,10 @@
   const quizProgressFill = document.getElementById('quizProgressFill');
   const quizTargetRoot = document.getElementById('quizTargetRoot');
   const quizTargetMeta = document.getElementById('quizTargetMeta');
+  const quizOccurNum = document.getElementById('quizOccurNum');
+  const quizGiveUpBtn = document.getElementById('quizGiveUpBtn');
+  const quizNextBtn = document.getElementById('quizNextBtn');
+  const quizExplain = document.getElementById('quizExplain');
   const modeExplainBtn = document.getElementById('modeExplainBtn');
   const explainModeView = document.getElementById('explainModeView');
   const exampleVerses = document.getElementById('exampleVerses');
@@ -493,6 +710,11 @@
   const practiceProgressText = document.getElementById('practiceProgressText');
   const practiceMissText = document.getElementById('practiceMissText');
   const practiceDone = document.getElementById('practiceDone');
+  const phaseDots = Array.from(document.querySelectorAll('.phase-dot'));
+  const phaseCards = Array.from(document.querySelectorAll('.phase-card'));
+  const phaseTrackFill = document.getElementById('phaseTrackFill');
+  const phasePrevBtn = document.getElementById('phasePrevBtn');
+  const phaseNextBtn = document.getElementById('phaseNextBtn');
 
   let currentRoot = null;
   let totalTargets = 0;
@@ -576,7 +798,7 @@
     fwRoot.textContent = rootKey;
     let meta = `全 ${info.count} 回`;
     let badge = `<span class="badge ${info.conf}">${info.conf==='high' ? '確度：高' : '推定'}</span>`;
-    targetMetaEl.innerHTML = meta + badge + (info.note ? `<br>${info.note}` : '');
+    targetMetaEl.innerHTML = `意味：${meaningOf(rootKey)}<br>` + meta + badge + (info.note ? `<br>${info.note}` : '');
     totalTargets = info.count;
     foundCount = 0;
     missCount = 0;
@@ -733,6 +955,8 @@
   let quizMissTotal = 0;
   let quizMissThisQ = 0;
   let quizPerfectCount = 0;
+  let quizGiveUpCount = 0;
+  let quizGaveUpThisQ = false;
   let quizRootsUsed = [];
 
   function shuffle(arr){
@@ -764,6 +988,7 @@
     quizIndex = 0;
     quizMissTotal = 0;
     quizPerfectCount = 0;
+    quizGiveUpCount = 0;
     quizRootsUsed = [];
     resultOverlay.classList.remove('show');
     renderQuizQuestion();
@@ -780,14 +1005,21 @@
     quizRootsUsed.push(q.root);
     quizFoundInVerse = 0;
     quizMissThisQ = 0;
+    quizGaveUpThisQ = false;
     quizTotalInVerse = verse.w.filter(w => w.r === q.root).length;
 
     quizProgressText.textContent = `問 ${quizIndex+1} / ${QUIZ_LENGTH}`;
     quizMissText.textContent = `誤タップ ${quizMissTotal}`;
     quizProgressFill.style.width = `${(quizIndex/QUIZ_LENGTH)*100}%`;
     quizTargetRoot.textContent = q.root;
+    quizOccurNum.textContent = quizTotalInVerse;
     const badge = `<span class="badge ${rootInfo.conf}">${rootInfo.conf==='high' ? '確度：高' : '推定'}</span>`;
-    quizTargetMeta.innerHTML = `この節に ${quizTotalInVerse} 箇所` + badge + (rootInfo.note ? `<br>${rootInfo.note}` : '');
+    quizTargetMeta.innerHTML = `意味：${meaningOf(q.root)}` + badge + (rootInfo.note ? `<br>${rootInfo.note}` : '');
+
+    quizGiveUpBtn.style.display = '';
+    quizNextBtn.style.display = 'none';
+    quizExplain.classList.remove('show');
+    quizExplain.innerHTML = '';
 
     quizVersePanel.innerHTML = '';
     const verseDiv = document.createElement('div');
@@ -811,6 +1043,7 @@
   }
 
   function onQuizWordTap(span){
+    if(quizGaveUpThisQ) return;
     const q = quizQuestions[quizIndex];
     if(span.classList.contains('found')) return;
     if(span.dataset.root === q.root){
@@ -836,22 +1069,47 @@
     }
   }
 
+  function giveUpQuestion(){
+    if(quizGaveUpThisQ) return;
+    quizGaveUpThisQ = true;
+    quizGiveUpCount++;
+    const q = quizQuestions[quizIndex];
+    const rootInfo = DATA.roots.find(r => r.root === q.root);
+    // 未発見の正解語をすべて表示する
+    const spans = quizVersePanel.querySelectorAll('.word');
+    spans.forEach(span => {
+      if(span.dataset.root === q.root && !span.classList.contains('found')){
+        span.classList.add('revealed');
+      }
+    });
+    quizGiveUpBtn.style.display = 'none';
+    quizNextBtn.style.display = '';
+    quizExplain.innerHTML =
+      `<b>正解：<span class="heb-inline">${q.root}</span></b>（意味：${meaningOf(q.root)}）<br>` +
+      (rootInfo && rootInfo.note ? rootInfo.note : '青色で示した単語が、この節でこの語根にあたる箇所。');
+    quizExplain.classList.add('show');
+  }
+
+  quizGiveUpBtn.addEventListener('click', giveUpQuestion);
+  quizNextBtn.addEventListener('click', () => { quizIndex++; renderQuizQuestion(); });
+
   function showQuizFinalResult(){
     const uniqueRoots = [...new Set(quizRootsUsed)];
     resultCard.innerHTML = `
       <div class="result-eyebrow">10問チャレンジ・結果</div>
       <div class="result-sub" style="font-size:20px;color:var(--ink);margin-top:6px;">全${QUIZ_LENGTH}問終了</div>
 
-      <div class="stat-grid">
+      <div class="stat-grid" style="grid-template-columns:repeat(4,1fr);">
         <div class="stat-box"><div class="num">${quizPerfectCount}/${QUIZ_LENGTH}</div><div class="lbl">ノーミス正解</div></div>
         <div class="stat-box"><div class="num">${quizMissTotal}</div><div class="lbl">誤タップ合計</div></div>
-        <div class="stat-box"><div class="num">${uniqueRoots.length}</div><div class="lbl">出題語根の種類</div></div>
+        <div class="stat-box"><div class="num">${quizGiveUpCount}</div><div class="lbl">ギブアップ</div></div>
+        <div class="stat-box"><div class="num">${uniqueRoots.length}</div><div class="lbl">出題語根数</div></div>
       </div>
 
       <div class="learn-section">
         <h3>今回出題された語根</h3>
         <div class="verse-tags">
-          ${uniqueRoots.map(r => `<span class="verse-tag heb">${r}</span>`).join('')}
+          ${uniqueRoots.map(r => `<span class="verse-tag heb" title="${meaningOf(r)}">${r}（${meaningOf(r)}）</span>`).join('')}
         </div>
       </div>
 
@@ -880,11 +1138,39 @@
     modeExplainBtn.classList.toggle('active', mode === 'explain');
     resultOverlay.classList.remove('show');
     if(mode === 'quiz') startQuiz();
+    if(mode === 'explain') showPhase(0);
   }
 
   modeFullBtn.addEventListener('click', () => switchMode('full'));
   modeQuizBtn.addEventListener('click', () => switchMode('quiz'));
   modeExplainBtn.addEventListener('click', () => switchMode('explain'));
+  // ================================================================
+
+  // ===================== 解説モード：フェーズ送り =====================
+  let explainPhase = 0;
+  const PHASE_COUNT = phaseCards.length;
+
+  function showPhase(i){
+    explainPhase = Math.max(0, Math.min(PHASE_COUNT - 1, i));
+    phaseCards.forEach(card => {
+      card.style.display = (Number(card.dataset.phase) === explainPhase) ? '' : 'none';
+    });
+    phaseDots.forEach(dot => {
+      const p = Number(dot.dataset.phase);
+      dot.classList.toggle('active', p === explainPhase);
+      dot.classList.toggle('done', p < explainPhase);
+    });
+    phaseTrackFill.style.width = `${(explainPhase/(PHASE_COUNT-1))*100}%`;
+    phasePrevBtn.disabled = (explainPhase === 0);
+    phaseNextBtn.disabled = (explainPhase === PHASE_COUNT - 1);
+    phaseNextBtn.textContent = (explainPhase === PHASE_COUNT - 1) ? '最後のステップ' : '次へ →';
+  }
+
+  phasePrevBtn.addEventListener('click', () => showPhase(explainPhase - 1));
+  phaseNextBtn.addEventListener('click', () => showPhase(explainPhase + 1));
+  phaseDots.forEach(dot => {
+    dot.addEventListener('click', () => showPhase(Number(dot.dataset.phase)));
+  });
   // ================================================================
 
   // ===================== 解説モード =====================
@@ -1030,6 +1316,7 @@
   renderText();
   renderExplainStatic();
   renderPractice();
+  showPhase(0);
   const defaultRoot = roots.find(r => r.root === 'ברא') ? 'ברא' : roots[0].root;
   rootSelect.value = defaultRoot;
   setTarget(defaultRoot);
