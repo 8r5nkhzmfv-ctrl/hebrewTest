@@ -50,6 +50,24 @@
     margin-bottom:18px;
   }
 
+  .mode-tabs{ display:flex; gap:8px; margin-bottom:16px; }
+  .mode-tab{
+    flex:1;
+    font-family: var(--ui-font);
+    font-size:15px;
+    padding:11px 8px;
+    border-radius:10px;
+    border:1px solid var(--line);
+    background:rgba(255,255,255,0.4);
+    color:var(--ink-soft);
+    cursor:pointer;
+  }
+  .mode-tab.active{
+    background:var(--gold);
+    border-color:var(--gold);
+    color:#fff;
+  }
+
   .control-row{
     display:flex; gap:10px; align-items:center; flex-wrap:wrap;
     font-family: var(--ui-font);
@@ -274,6 +292,48 @@
   .confuse-row{ display:flex; justify-content:space-between; padding:3px 0; }
   .result-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:6px; }
   .result-actions button{ flex:1; min-width:120px; }
+
+  /* 解説モード */
+  .explain-block{
+    background:rgba(255,255,255,0.4);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:18px 20px;
+    margin-bottom:16px;
+    font-family: var(--ui-font);
+    font-size:15px;
+    line-height:1.85;
+    color:var(--ink);
+  }
+  .explain-block h3{
+    margin:0 0 10px;
+    font-size:17px;
+    color:var(--ink);
+  }
+  .explain-block p{ margin:0 0 10px; }
+  .explain-block ul{ margin:0 0 10px; padding-inline-start:20px; }
+  .heb-inline{
+    direction:rtl;
+    unicode-bidi:isolate;
+    font-family:"Frank Ruhl Libre","Times New Roman",serif;
+    font-size:1.3em;
+    padding:0 2px;
+  }
+  .root-letter{ color:#B0522D; font-weight:700; }
+  .step-arrow{ color:var(--ink-soft); font-family: var(--ui-font); margin:0 8px; }
+  .step-row{ display:flex; align-items:center; flex-wrap:wrap; gap:4px; margin:10px 0; }
+  #practicePanel .word{ cursor:pointer; }
+  .practice-done{
+    display:none;
+    margin-top:12px;
+    padding:12px 14px;
+    border-radius:10px;
+    background:rgba(var(--gold-glow),0.15);
+    border:1px solid var(--gold);
+    font-size:14px;
+    line-height:1.7;
+  }
+  .practice-done.show{ display:block; }
 </style>
 </head>
 <body>
@@ -292,26 +352,101 @@
     <div class="sub">創世記1章〜2章3節：同じ語根（シェレシュ）の単語をすべてタップして集めよう</div>
   </header>
 
-  <div class="panel">
-    <div class="control-row">
-      <label for="rootSelect">自分で選ぶ</label>
-      <select id="rootSelect"></select>
-    </div>
-    <div class="control-row" style="margin-top:10px;">
-      <button id="randomBtn" class="solid">🎲 ランダムに出題してもらう</button>
-    </div>
-    <div class="target-display">
-      <div class="target-root" id="targetRoot">—</div>
-      <div class="target-meta" id="targetMeta"></div>
-    </div>
-    <div class="progress-row">
-      <span id="progressText">0 / 0</span>
-      <span id="missText">誤タップ 0</span>
-    </div>
-    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="mode-tabs">
+    <button id="modeFullBtn" class="mode-tab active">📜 全文で探す</button>
+    <button id="modeQuizBtn" class="mode-tab">🎯 一節10問チャレンジ</button>
+    <button id="modeExplainBtn" class="mode-tab">📖 解説</button>
   </div>
 
-  <div class="text-panel" id="textPanel"></div>
+  <div id="fullModeView">
+    <div class="panel">
+      <div class="control-row">
+        <label for="rootSelect">自分で選ぶ</label>
+        <select id="rootSelect"></select>
+      </div>
+      <div class="control-row" style="margin-top:10px;">
+        <button id="randomBtn" class="solid">🎲 ランダムに出題してもらう</button>
+      </div>
+      <div class="target-display">
+        <div class="target-root" id="targetRoot">—</div>
+        <div class="target-meta" id="targetMeta"></div>
+      </div>
+      <div class="progress-row">
+        <span id="progressText">0 / 0</span>
+        <span id="missText">誤タップ 0</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+
+    <div class="text-panel" id="textPanel"></div>
+  </div>
+
+  <div id="quizModeView" style="display:none;">
+    <div class="panel">
+      <div class="progress-row" style="margin-top:0;">
+        <span id="quizProgressText">問 1 / 10</span>
+        <span id="quizMissText">誤タップ 0</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="quizProgressFill"></div></div>
+      <div class="target-display">
+        <div class="target-root" id="quizTargetRoot">—</div>
+        <div class="target-meta" id="quizTargetMeta"></div>
+      </div>
+    </div>
+
+    <div class="text-panel" id="quizVersePanel"></div>
+  </div>
+
+  <div id="explainModeView" style="display:none;">
+
+    <div class="explain-block">
+      <h3>1️⃣ 語根（シェレシュ）とは何か</h3>
+      <p>ヘブル語の単語の多くは、3つ（まれに2つや4つ）の子音からなる「語根」を土台にして作られる。語根そのものは単語ではなく、意味の芯となる抽象的な骨組み。</p>
+      <p>そこに母音のパターンや接頭辞・接尾辞を組み合わせることで、動詞・名詞・形容詞など具体的な単語になる。骨組みが語根、肉付けが母音パターンや接辞、というイメージ。</p>
+    </div>
+
+    <div class="explain-block">
+      <h3>2️⃣ 語根の例：<span class="heb-inline">ב־ר־א</span>（創る）</h3>
+      <p>この章の冒頭に出てくる語根<span class="heb-inline">ברא</span>（B-R-A）を例にする。</p>
+      <div class="step-row">
+        <span class="heb-inline">ב　ר　א</span>
+        <span>語根そのもの（まだ発音も時制も確定しない）</span>
+      </div>
+      <div class="step-row">
+        <span class="step-arrow">↓ 完了形・三人称男性単数の母音パターンを入れる</span>
+      </div>
+      <div class="step-row">
+        <span class="heb-inline" id="exWord1"></span>
+        <span>「彼は創った」</span>
+      </div>
+      <div class="step-row">
+        <span class="step-arrow">↓ さらに「ワウ継続」の接頭辞と未完了の接頭辞を付ける</span>
+      </div>
+      <div class="step-row">
+        <span class="heb-inline" id="exWord2"></span>
+        <span>「そして彼は創った」</span>
+      </div>
+      <p>色のついた文字（<span class="root-letter">例</span>）が語根の3子音。形が変わっても、この3文字の骨組みは変わらない。</p>
+    </div>
+
+    <div class="explain-block">
+      <h3>3️⃣ 実例：本文の中の<span class="heb-inline">ברא</span></h3>
+      <p>この語根は創世記1章〜2章3節の中に6回登場する。色のついた部分がすべて同じ語根。</p>
+      <div id="exampleVerses"></div>
+    </div>
+
+    <div class="explain-block">
+      <h3>4️⃣ 練習：<span class="heb-inline">ברא</span> をタップして探す</h3>
+      <p>語根の3文字にあらかじめ色をつけてある。同じ色の形を持つ単語を、下の本文からすべてタップして見つける（全6箇所）。</p>
+      <div class="progress-row" style="margin-top:6px;">
+        <span id="practiceProgressText">0 / 6</span>
+        <span id="practiceMissText">誤タップ 0</span>
+      </div>
+      <div class="text-panel" id="practicePanel" style="margin-top:10px;"></div>
+      <div class="practice-done" id="practiceDone"></div>
+    </div>
+
+  </div>
 
   <footer>逐語訳データに基づく語根推定。一部の語根は学術的に確定していない推定（バッジ「推定」表示）を含む。</footer>
 </div>
@@ -340,6 +475,24 @@
   const fwFill = document.getElementById('fwFill');
   const resultOverlay = document.getElementById('resultOverlay');
   const resultCard = document.getElementById('resultCard');
+  const floatWidget = document.getElementById('floatWidget');
+  const modeFullBtn = document.getElementById('modeFullBtn');
+  const modeQuizBtn = document.getElementById('modeQuizBtn');
+  const fullModeView = document.getElementById('fullModeView');
+  const quizModeView = document.getElementById('quizModeView');
+  const quizVersePanel = document.getElementById('quizVersePanel');
+  const quizProgressText = document.getElementById('quizProgressText');
+  const quizMissText = document.getElementById('quizMissText');
+  const quizProgressFill = document.getElementById('quizProgressFill');
+  const quizTargetRoot = document.getElementById('quizTargetRoot');
+  const quizTargetMeta = document.getElementById('quizTargetMeta');
+  const modeExplainBtn = document.getElementById('modeExplainBtn');
+  const explainModeView = document.getElementById('explainModeView');
+  const exampleVerses = document.getElementById('exampleVerses');
+  const practicePanel = document.getElementById('practicePanel');
+  const practiceProgressText = document.getElementById('practiceProgressText');
+  const practiceMissText = document.getElementById('practiceMissText');
+  const practiceDone = document.getElementById('practiceDone');
 
   let currentRoot = null;
   let totalTargets = 0;
@@ -370,7 +523,7 @@
   const TAP_MOVE_LIMIT = 10;  // px
   const TAP_TIME_LIMIT = 450; // ms
 
-  function attachTapHandler(span){
+  function attachTapHandler(span, handler){
     let sx=0, sy=0, st=0, tracking=false;
     span.addEventListener('pointerdown', (e) => {
       sx = e.clientX; sy = e.clientY; st = Date.now(); tracking = true;
@@ -383,7 +536,7 @@
       const dy = Math.abs(e.clientY - sy);
       const dt = Date.now() - st;
       if(dx <= TAP_MOVE_LIMIT && dy <= TAP_MOVE_LIMIT && dt <= TAP_TIME_LIMIT){
-        onWordTap(span);
+        handler(span);
       }
       // 条件を満たさない場合＝スクロール操作とみなし、無視する
     });
@@ -407,7 +560,7 @@
         if(word.r) span.dataset.root = word.r;
         span.dataset.gloss = word.g || '';
         span.dataset.verse = `${v.ch}:${v.v}`;
-        attachTapHandler(span);
+        attachTapHandler(span, onWordTap);
         verseDiv.appendChild(span);
         verseDiv.appendChild(document.createTextNode(' '));
         wordSpans.push(span);
@@ -569,7 +722,314 @@
     setTarget(r);
   });
 
+  // ===================== 10問チャレンジモード =====================
+  // ランダムに語根を1つ選び、その語根が登場する節を1つだけ表示。
+  // 節の中からその語根の単語だけをタップする、を10問繰り返す。
+  const QUIZ_LENGTH = 10;
+  let quizQuestions = [];
+  let quizIndex = 0;
+  let quizFoundInVerse = 0;
+  let quizTotalInVerse = 0;
+  let quizMissTotal = 0;
+  let quizMissThisQ = 0;
+  let quizPerfectCount = 0;
+  let quizRootsUsed = [];
+
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  }
+
+  // (節, 語根) の組み合わせのうち、その節に対象語根が実際に登場するものだけを列挙
+  function buildQuestionPool(){
+    const pool = [];
+    DATA.verses.forEach((v, vi) => {
+      const rootsInVerse = new Set(v.w.filter(w => w.r).map(w => w.r));
+      rootsInVerse.forEach(r => {
+        if(roots.some(x => x.root === r)){
+          pool.push({verseIndex: vi, root: r});
+        }
+      });
+    });
+    return pool;
+  }
+
+  function startQuiz(){
+    const pool = buildQuestionPool();
+    quizQuestions = shuffle(pool).slice(0, QUIZ_LENGTH);
+    quizIndex = 0;
+    quizMissTotal = 0;
+    quizPerfectCount = 0;
+    quizRootsUsed = [];
+    resultOverlay.classList.remove('show');
+    renderQuizQuestion();
+  }
+
+  function renderQuizQuestion(){
+    if(quizIndex >= quizQuestions.length){
+      showQuizFinalResult();
+      return;
+    }
+    const q = quizQuestions[quizIndex];
+    const verse = DATA.verses[q.verseIndex];
+    const rootInfo = DATA.roots.find(r => r.root === q.root);
+    quizRootsUsed.push(q.root);
+    quizFoundInVerse = 0;
+    quizMissThisQ = 0;
+    quizTotalInVerse = verse.w.filter(w => w.r === q.root).length;
+
+    quizProgressText.textContent = `問 ${quizIndex+1} / ${QUIZ_LENGTH}`;
+    quizMissText.textContent = `誤タップ ${quizMissTotal}`;
+    quizProgressFill.style.width = `${(quizIndex/QUIZ_LENGTH)*100}%`;
+    quizTargetRoot.textContent = q.root;
+    const badge = `<span class="badge ${rootInfo.conf}">${rootInfo.conf==='high' ? '確度：高' : '推定'}</span>`;
+    quizTargetMeta.innerHTML = `この節に ${quizTotalInVerse} 箇所` + badge + (rootInfo.note ? `<br>${rootInfo.note}` : '');
+
+    quizVersePanel.innerHTML = '';
+    const verseDiv = document.createElement('div');
+    verseDiv.className = 'verse';
+    const vnum = document.createElement('span');
+    vnum.className = 'vnum';
+    vnum.textContent = `${verse.ch}:${verse.v}`;
+    verseDiv.appendChild(vnum);
+    verseDiv.appendChild(document.createTextNode(' '));
+    verse.w.forEach(word => {
+      const span = document.createElement('span');
+      span.textContent = word.s;
+      span.className = 'word ' + (word.r ? 'taggable' : 'plain');
+      if(word.r) span.dataset.root = word.r;
+      span.dataset.gloss = word.g || '';
+      attachTapHandler(span, onQuizWordTap);
+      verseDiv.appendChild(span);
+      verseDiv.appendChild(document.createTextNode(' '));
+    });
+    quizVersePanel.appendChild(verseDiv);
+  }
+
+  function onQuizWordTap(span){
+    const q = quizQuestions[quizIndex];
+    if(span.classList.contains('found')) return;
+    if(span.dataset.root === q.root){
+      span.classList.add('found');
+      quizFoundInVerse++;
+      if(quizFoundInVerse === quizTotalInVerse){
+        const perfect = quizMissThisQ === 0;
+        if(perfect) quizPerfectCount++;
+        showToast(perfect ? '正解！ノーミス' : '正解', 900);
+        setTimeout(() => { quizIndex++; renderQuizQuestion(); }, 700);
+      }
+    } else {
+      span.classList.add('miss-flash');
+      quizMissTotal++;
+      quizMissThisQ++;
+      quizMissText.textContent = `誤タップ ${quizMissTotal}`;
+      if(span.dataset.root){
+        showToast(`これは別の語根「${span.dataset.root}」— ${span.dataset.gloss}`);
+      } else {
+        showToast('この語は対象外（前置詞・接続詞など）');
+      }
+      setTimeout(()=>span.classList.remove('miss-flash'), 300);
+    }
+  }
+
+  function showQuizFinalResult(){
+    const uniqueRoots = [...new Set(quizRootsUsed)];
+    resultCard.innerHTML = `
+      <div class="result-eyebrow">10問チャレンジ・結果</div>
+      <div class="result-sub" style="font-size:20px;color:var(--ink);margin-top:6px;">全${QUIZ_LENGTH}問終了</div>
+
+      <div class="stat-grid">
+        <div class="stat-box"><div class="num">${quizPerfectCount}/${QUIZ_LENGTH}</div><div class="lbl">ノーミス正解</div></div>
+        <div class="stat-box"><div class="num">${quizMissTotal}</div><div class="lbl">誤タップ合計</div></div>
+        <div class="stat-box"><div class="num">${uniqueRoots.length}</div><div class="lbl">出題語根の種類</div></div>
+      </div>
+
+      <div class="learn-section">
+        <h3>今回出題された語根</h3>
+        <div class="verse-tags">
+          ${uniqueRoots.map(r => `<span class="verse-tag heb">${r}</span>`).join('')}
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <button id="quizRetryBtn" class="solid">🎲 もう10問</button>
+      </div>
+      <div class="result-actions">
+        <button id="quizBackBtn">全文モードに戻る</button>
+      </div>
+    `;
+    resultOverlay.classList.add('show');
+    document.getElementById('quizRetryBtn').onclick = () => startQuiz();
+    document.getElementById('quizBackBtn').onclick = () => {
+      resultOverlay.classList.remove('show');
+      switchMode('full');
+    };
+  }
+
+  function switchMode(mode){
+    fullModeView.style.display = mode === 'full' ? '' : 'none';
+    quizModeView.style.display = mode === 'quiz' ? '' : 'none';
+    explainModeView.style.display = mode === 'explain' ? '' : 'none';
+    floatWidget.style.display = mode === 'full' ? '' : 'none';
+    modeFullBtn.classList.toggle('active', mode === 'full');
+    modeQuizBtn.classList.toggle('active', mode === 'quiz');
+    modeExplainBtn.classList.toggle('active', mode === 'explain');
+    resultOverlay.classList.remove('show');
+    if(mode === 'quiz') startQuiz();
+  }
+
+  modeFullBtn.addEventListener('click', () => switchMode('full'));
+  modeQuizBtn.addEventListener('click', () => switchMode('quiz'));
+  modeExplainBtn.addEventListener('click', () => switchMode('explain'));
+  // ================================================================
+
+  // ===================== 解説モード =====================
+  const PRACTICE_ROOT = 'ברא';
+  // 語根の3子音がどの「音節クラスタ」に当たるかを、対象となる2種類の表層形についてのみ手動指定
+  // （弱動詞の同化などがない強変化動詞なので、単純な子音抽出で対応できる）
+  const ROOT_LETTER_MAP = {
+    'בָּרָא':    [0,1,2],   // 語根3文字すべて
+    'וַיִּבְרָא': [2,3,4]    // 先頭2クラスタ(ו,י)は接頭辞。後ろ3つが語根
+  };
+
+  function clusterHebrew(str){
+    const isConsonant = ch => {
+      const cp = ch.codePointAt(0);
+      return cp >= 0x05D0 && cp <= 0x05EA;
+    };
+    const out = [];
+    let cur = '';
+    for(const ch of str){
+      if(isConsonant(ch)){
+        if(cur) out.push(cur);
+        cur = ch;
+      } else {
+        cur += ch;
+      }
+    }
+    if(cur) out.push(cur);
+    return out;
+  }
+
+  // surfaceの文字列を、語根部分だけ色付けしたノード群にして親要素へ追加する
+  function appendHighlighted(parent, surface){
+    const idx = ROOT_LETTER_MAP[surface];
+    const clusters = clusterHebrew(surface);
+    clusters.forEach((c, i) => {
+      if(idx && idx.includes(i)){
+        const rs = document.createElement('span');
+        rs.className = 'root-letter';
+        rs.textContent = c;
+        parent.appendChild(rs);
+      } else {
+        parent.appendChild(document.createTextNode(c));
+      }
+    });
+  }
+
+  function renderExplainStatic(){
+    // 2️⃣の例示単語
+    appendHighlighted(document.getElementById('exWord1'), 'בָּרָא');
+    appendHighlighted(document.getElementById('exWord2'), 'וַיִּבְרָא');
+
+    // 3️⃣ 実例：ברא を含む節を、色付きで（タップ不可・表示のみ）
+    const versesWithRoot = DATA.verses.filter(v => v.w.some(w => w.r === PRACTICE_ROOT));
+    exampleVerses.innerHTML = '';
+    const panel = document.createElement('div');
+    panel.className = 'text-panel';
+    versesWithRoot.forEach(v => {
+      const verseDiv = document.createElement('div');
+      verseDiv.className = 'verse';
+      const vnum = document.createElement('span');
+      vnum.className = 'vnum';
+      vnum.textContent = `${v.ch}:${v.v}`;
+      verseDiv.appendChild(vnum);
+      verseDiv.appendChild(document.createTextNode(' '));
+      v.w.forEach(word => {
+        const span = document.createElement('span');
+        span.className = 'word plain';
+        if(word.r === PRACTICE_ROOT){
+          appendHighlighted(span, word.s);
+        } else {
+          span.textContent = word.s;
+        }
+        verseDiv.appendChild(span);
+        verseDiv.appendChild(document.createTextNode(' '));
+      });
+      panel.appendChild(verseDiv);
+    });
+    exampleVerses.appendChild(panel);
+  }
+
+  let practiceFound = 0;
+  let practiceMiss = 0;
+  const PRACTICE_TOTAL = 6; // ברא の全出現回数
+
+  function renderPractice(){
+    practiceFound = 0;
+    practiceMiss = 0;
+    practiceProgressText.textContent = `0 / ${PRACTICE_TOTAL}`;
+    practiceMissText.textContent = '誤タップ 0';
+    practiceDone.classList.remove('show');
+    practiceDone.innerHTML = '';
+
+    practicePanel.innerHTML = '';
+    const versesWithRoot = DATA.verses.filter(v => v.w.some(w => w.r === PRACTICE_ROOT));
+    versesWithRoot.forEach(v => {
+      const verseDiv = document.createElement('div');
+      verseDiv.className = 'verse';
+      const vnum = document.createElement('span');
+      vnum.className = 'vnum';
+      vnum.textContent = `${v.ch}:${v.v}`;
+      verseDiv.appendChild(vnum);
+      verseDiv.appendChild(document.createTextNode(' '));
+      v.w.forEach(word => {
+        const span = document.createElement('span');
+        span.className = 'word ' + (word.r ? 'taggable' : 'plain');
+        if(word.r) span.dataset.root = word.r;
+        span.dataset.gloss = word.g || '';
+        if(word.r === PRACTICE_ROOT){
+          appendHighlighted(span, word.s);
+        } else {
+          span.textContent = word.s;
+        }
+        attachTapHandler(span, onPracticeWordTap);
+        verseDiv.appendChild(span);
+        verseDiv.appendChild(document.createTextNode(' '));
+      });
+      practicePanel.appendChild(verseDiv);
+    });
+  }
+
+  function onPracticeWordTap(span){
+    if(span.classList.contains('found')) return;
+    if(span.dataset.root === PRACTICE_ROOT){
+      span.classList.add('found');
+      practiceFound++;
+      practiceProgressText.textContent = `${practiceFound} / ${PRACTICE_TOTAL}`;
+      if(practiceFound === PRACTICE_TOTAL){
+        practiceDone.innerHTML =
+          `${PRACTICE_TOTAL}/${PRACTICE_TOTAL} 発見（誤タップ ${practiceMiss}回）。` +
+          `色のついた3文字 <span class="heb-inline root-letter">ברא</span> が、時制や接頭辞が変わっても共通していたことを確認した。`;
+        practiceDone.classList.add('show');
+      }
+    } else {
+      span.classList.add('miss-flash');
+      practiceMiss++;
+      practiceMissText.textContent = `誤タップ ${practiceMiss}`;
+      showToast(span.dataset.root ? `これは別の語根「${span.dataset.root}」` : 'この語は対象外（前置詞・接続詞など）');
+      setTimeout(()=>span.classList.remove('miss-flash'), 300);
+    }
+  }
+  // ================================================================
+
   renderText();
+  renderExplainStatic();
+  renderPractice();
   const defaultRoot = roots.find(r => r.root === 'ברא') ? 'ברא' : roots[0].root;
   rootSelect.value = defaultRoot;
   setTarget(defaultRoot);
