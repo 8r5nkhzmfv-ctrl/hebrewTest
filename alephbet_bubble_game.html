@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>アレフベート・バブルクイズ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+Hebrew:wght@400;500;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
@@ -15,18 +15,21 @@
     --good:#5fd08a; --bad:#e2604f;
   }
   *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;height:100%;}
+  html,body{margin:0;padding:0;height:auto;min-height:100%;}
   body{
     min-height:100vh;
+    min-height:100dvh; /* Safariのツールバー分の高さ変動に対応 */
     background:
       radial-gradient(circle at 15% 10%, rgba(255,255,255,.06), transparent 40%),
       radial-gradient(circle at 85% 85%, rgba(255,255,255,.05), transparent 45%),
       linear-gradient(180deg, var(--sky1), var(--sky2));
     font-family:'Noto Sans JP',sans-serif;
     color:var(--parchment);
-    display:flex; align-items:center; justify-content:center;
-    overflow:hidden;
+    display:flex; align-items:flex-start; justify-content:center;
+    overflow-y:auto; overflow-x:hidden;
     position:relative;
+    padding-top: max(18px, env(safe-area-inset-top));
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
   }
   .heb{font-family:'Noto Sans Hebrew',sans-serif;direction:rtl;unicode-bidi:isolate;}
 
@@ -92,15 +95,14 @@
   }
   .sb-audio-icon{font-size:52px;cursor:pointer;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));}
   .sb-write-in{
-    animation: writeIn .55s ease both;
+    animation: writeIn .4s cubic-bezier(.22,1,.36,1) both;
   }
   @keyframes writeIn{
-    0%{ clip-path:inset(0 100% 0 0); opacity:.2; }
-    70%{ opacity:1; }
+    0%{ clip-path:inset(0 100% 0 0); opacity:0; }
     100%{ clip-path:inset(0 0% 0 0); opacity:1; }
   }
   .ink-underline{width:70%;height:3px;margin-top:10px;position:relative;overflow:hidden;border-radius:2px;background:rgba(255,255,255,.08);}
-  .ink-underline i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--gold);animation:inkfill .5s ease .05s forwards;}
+  .ink-underline i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--gold);animation:inkfill .38s ease .02s forwards;}
   @keyframes inkfill{ to{ width:100%; } }
 
   /* バブル */
@@ -119,25 +121,24 @@
     font-weight:700;
     text-align:center;
     padding:6px;
-    animation: bob 3.4s ease-in-out infinite, popIn .45s cubic-bezier(.34,1.56,.64,1) both;
+    animation: bob 3.4s ease-in-out infinite, popIn .3s cubic-bezier(.22,1,.36,1) both;
   }
   .bubble .bt-heb{font-family:'Noto Sans Hebrew',sans-serif;direction:rtl;font-size:26px;}
   .bubble .bt-jp{font-size:13px;line-height:1.3;}
   @keyframes bob{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-10px);} }
-  @keyframes popIn{ 0%{ transform:scale(0); opacity:0;} 70%{ transform:scale(1.12); opacity:1;} 100%{ transform:scale(1);} }
+  @keyframes popIn{ 0%{ transform:scale(.4); opacity:0;} 100%{ transform:scale(1); opacity:1;} }
   @keyframes popOut{
     0%{ transform:scale(1); opacity:1; }
-    40%{ transform:scale(1.25); opacity:.9; }
-    100%{ transform:scale(0); opacity:0; }
+    100%{ transform:scale(1.35); opacity:0; }
   }
-  .bubble.pop{ animation:popOut .38s ease forwards; pointer-events:none; }
+  .bubble.pop{ animation:popOut .26s cubic-bezier(.22,1,.36,1) forwards; pointer-events:none; }
   .bubble.correct{ box-shadow: inset 0 0 18px rgba(120,255,170,.7), 0 0 22px rgba(120,255,170,.5); }
   .bubble.wrong{ box-shadow: inset 0 0 18px rgba(255,120,110,.7), 0 0 22px rgba(255,120,110,.5); }
   .ring{
     position:absolute; border-radius:50%; border:2px solid rgba(255,255,255,.7);
-    animation: ringOut .5s ease forwards; pointer-events:none;
+    animation: ringOut .38s cubic-bezier(.22,1,.36,1) forwards; pointer-events:none;
   }
-  @keyframes ringOut{ 0%{ transform:scale(.3); opacity:.9;} 100%{ transform:scale(2.2); opacity:0;} }
+  @keyframes ringOut{ 0%{ transform:scale(.4); opacity:.85;} 100%{ transform:scale(1.9); opacity:0;} }
 
   /* ===== 結果画面 ===== */
   .result-panel{text-align:center;}
@@ -258,11 +259,11 @@ const LETTERS = [
  {heb:'פ',roman:'pe',kana:'ペー'},{heb:'צ',roman:'tsadi',kana:'ツァディ'},
  {heb:'ק',roman:'qof',kana:'コフ'},{heb:'ר',roman:'resh',kana:'レーシュ'},
  {heb:'ש',roman:'shin',kana:'シン'},{heb:'ת',roman:'tav',kana:'タヴ'},
- {heb:'ך',roman:'khaf sofit',kana:'カフ・ソフィート'},
- {heb:'ם',roman:'mem sofit',kana:'メム・ソフィート'},
- {heb:'ן',roman:'nun sofit',kana:'ヌン・ソフィート'},
- {heb:'ף',roman:'fe sofit',kana:'ペー・ソフィート'},
- {heb:'ץ',roman:'tsadi sofit',kana:'ツァディ・ソフィート'}
+ {heb:'ך',roman:'khaf sofit',kana:'カフ',sofit:true},
+ {heb:'ם',roman:'mem sofit',kana:'メム',sofit:true},
+ {heb:'ן',roman:'nun sofit',kana:'ヌン',sofit:true},
+ {heb:'ף',roman:'fe sofit',kana:'ペー',sofit:true},
+ {heb:'ץ',roman:'tsadi sofit',kana:'ツァディ',sofit:true}
 ];
 
 /* ============ 状態 ============ */
@@ -339,11 +340,15 @@ function backToStart(){
 }
 
 let currentQ = null;
+function questionPool(){
+  return state.direction==='j2h' ? LETTERS.filter(x=>!x.sofit) : LETTERS;
+}
 function nextQuestion(){
   if(state.timeLeft<=0) return;
   state.locked = false;
-  const idx = Math.floor(Math.random()*LETTERS.length);
-  currentQ = LETTERS[idx];
+  const pool = questionPool();
+  const idx = Math.floor(Math.random()*pool.length);
+  currentQ = pool[idx];
   renderQuestion();
 }
 function renderQuestion(){
@@ -366,7 +371,7 @@ function renderQuestion(){
     const el = document.createElement('div'); el.className='sb-audio-icon sb-write-in'; el.textContent = '🔊';
     el.onclick = ()=>speakHebrew(currentQ.heb, 0.8);
     sbContent.appendChild(el);
-    setTimeout(()=>speakHebrew(currentQ.heb,0.8), 350);
+    setTimeout(()=>speakHebrew(currentQ.heb,0.8), 200);
   }
 
   renderBubbles();
@@ -374,7 +379,8 @@ function renderQuestion(){
 function renderBubbles(){
   const field = document.getElementById('bubble-field');
   field.innerHTML='';
-  const pool = LETTERS.filter(x=>x!==currentQ);
+  /* ソフィートと通常形は読みが同じため、同じ読みを持つ項目は選択肢が被らないよう除外する */
+  const pool = questionPool().filter(x=>x!==currentQ && x.kana!==currentQ.kana);
   const distractors = shuffle(pool).slice(0,2);
   const opts = shuffle([currentQ, ...distractors]);
 
@@ -384,7 +390,7 @@ function renderBubbles(){
   opts.forEach((opt,i)=>{
     const b = document.createElement('div'); b.className='bubble';
     b.style.left = posShuffled[i].left; b.style.top = posShuffled[i].top;
-    b.style.animationDelay = (i*0.08)+'s, '+(Math.random()*1.2)+'s';
+    b.style.animationDelay = (i*0.035)+'s, '+(Math.random()*1.2)+'s';
     if(state.direction==='h2j'){
       const jp=document.createElement('div'); jp.className='bt-jp'; jp.textContent = opt.kana;
       b.appendChild(jp);
@@ -405,9 +411,9 @@ function onBubbleTap(el, opt){
   el.classList.add(correct?'correct':'wrong');
   document.querySelectorAll('.bubble').forEach(b=>{ b.classList.add('pop'); });
   state.attempts++;
-  if(correct){ state.score++; document.getElementById('hud-score').textContent = state.score; setTimeout(playCorrect,60); }
-  else { setTimeout(playWrong,60); }
-  setTimeout(()=>{ if(state.timeLeft>0) nextQuestion(); }, 620);
+  if(correct){ state.score++; document.getElementById('hud-score').textContent = state.score; setTimeout(playCorrect,40); }
+  else { setTimeout(playWrong,40); }
+  setTimeout(()=>{ if(state.timeLeft>0) nextQuestion(); }, 360);
 }
 function spawnRing(el){
   const field = document.getElementById('bubble-field');
@@ -417,7 +423,7 @@ function spawnRing(el){
   r.style.width=size+'px'; r.style.height=size+'px';
   r.style.left = (rect.left-fieldRect.left)+'px'; r.style.top = (rect.top-fieldRect.top)+'px';
   field.appendChild(r);
-  setTimeout(()=>r.remove(),520);
+  setTimeout(()=>r.remove(),400);
 }
 </script>
 </body>
