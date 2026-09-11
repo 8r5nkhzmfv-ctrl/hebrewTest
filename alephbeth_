@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>たのしい！ヘブライもじアドベンチャー</title>
+    <style>
+        :root {
+            --primary-color: #4A90E2;
+            --accent-color: #FF6B6B;
+            --bg-color: #EEF5FC;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Hiragino Maru Gothic ProN', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            user-select: none;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-btn {
+            background-color: #fff;
+            border: 3px solid var(--primary-color);
+            border-radius: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-btn.active, .nav-btn:hover {
+            background-color: var(--primary-color);
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .hebrew-large {
+            font-size: 100px;
+            font-weight: bold;
+            color: #2C3E50;
+            margin: 10px 0;
+            line-height: 1.2;
+        }
+
+        .desc-text {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .option-btn {
+            background-color: #F8F9FA;
+            border: 3px solid #E9ECEF;
+            border-radius: 15px;
+            padding: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-color);
+            background-color: #EBF3FA;
+        }
+
+        .big-btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 22px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #D9534F;
+            transition: transform 0.1s;
+        }
+
+        .big-btn:active {
+            transform: translateY(5px);
+            box-shadow: none;
+        }
+
+        .score-board {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .feedback {
+            font-size: 24px;
+            font-weight: bold;
+            height: 35px;
+            margin-top: 10px;
+        }
+        
+        .correct { color: #2ECC71; }
+        .wrong { color: #E74C3C; }
+
+        .hint-box {
+            background-color: #FFF9DB;
+            border: 2px dashed #FAB005;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>✨ たのしい！ヘブライもじ ✨</h1>
+
+    <div class="nav-buttons">
+        <button class="nav-btn active" onclick="switchGame(1)">1️⃣ おぼえうた</button>
+        <button class="nav-btn" onclick="switchGame(2)">2️⃣ にているもじ</button>
+        <button class="nav-btn" onclick="switchGame(3)">3️⃣ へんしんもじ</button>
+    </div>
+
+    <!-- 1. おぼえうたゲーム -->
+    <div id="game1" class="game-card">
+        <div class="desc-text">順番にでてくる文字をおぼえよう！</div>
+        <div class="hebrew-large" id="g1-char">א</div>
+        <div style="font-size: 28px; font-weight: bold; color: var(--primary-color);" id="g1-name">アレフ</div>
+        <div style="font-size: 18px; color: #888; margin-top: 5px;" id="g1-sound">（音はないよ／静かな音）</div>
+        <br><br>
+        <button class="big-btn" onclick="g1Next()">つぎの もじ ＞</button>
+    </div>
+
+    <!-- 2. 似てる文字比較ゲーム -->
+    <div id="game2" class="game-card" style="display: none;">
+        <div class="score-board">てんすう: <span id="g2-score">0</span></div>
+        <div class="desc-text" id="g2-question">「ベット」は どっち？<br>（右下がしかくい方だよ）</div>
+        <div class="hebrew-large" id="g2-target" style="font-size: 50px;">Target</div>
+        
+        <div class="options-grid">
+            <button class="option-btn" id="g2-opt1" onclick="g2Check(0)"></button>
+            <button class="option-btn" id="g2-opt2" onclick="g2Check(1)"></button>
+        </div>
+        <div class="feedback" id="g2-feedback"></div>
+    </div>
+
+    <!-- 3. へんしん文字（ソフィート）ゲーム -->
+    <div id="game3" class="game-card" style="display: none;">
+        <div class="desc-text">いちばん最後にくると、形がかわる「へんしん文字」！</div>
+        <div class="hebrew-large" id="g3-char">מ</div>
+        <div class="hint-box" id="g3-hint">ふつうの形：メム（Mの音）</div>
+        <p style="font-size: 18px; font-weight: bold;">ことばの「最後」にへんしんすると…？</p>
+        <button class="big-btn" onclick="g3Transform()">へんしん！✨</button>
+        <br><br>
+        <button class="nav-btn" onclick="g3Next()" style="margin-top: 10px;">つぎの もじ</button>
+    </div>
+
+<script>
+    // データ定義
+    const alphabet = [
+        { char: 'א', name: 'アレフ (Alef)', sound: '音はないよ（息の音）' },
+        { char: 'ב', name: 'ベット (Bet)', sound: '「B」または「V」の音' },
+        { char: 'ג', name: 'ギメル (Gimel)', sound: '「G」（ガ行）の音' },
+        { char: 'ד', name: 'ダレット (Dalet)', sound: '「D」（ダ行）の音' },
+        { char: 'ה', name: 'ヘー (He)', sound: '「H」（ハ行）の音' }
+    ];
+
+    const similarPairs = [
+        {
+            qName: 'ベット (Bet)',
+            target: 'ב',
+            dummy: 'כ',
+            hint: '角が「しかくい」ほうを選ぼう！',
+            explain: 'ב は右下が四角、כ は右下が丸いよ！'
+        },
+        {
+            qName: 'ダレット (Dalet)',
+            target: 'ד',
+            dummy: 'ר',
+            hint: '角が「とがっている」ほうを選ぼう！',
+            explain: 'ד は右上が出っ張っていて、ר は丸いよ！'
+        },
+        {
+            qName: 'ヘー (He)',
+            target: 'ה',
+            dummy: 'ח',
+            hint: '左上に「すきま」があるほうを選ぼう！',
+            explain: 'ה は左上に隙間があるけど、ח はつながってるよ！'
+        }
+    ];
+
+    const sofitList = [
+        { normal: 'מ', sofit: 'ם', name: 'メム (M)', hint: '最後になると「しかく」に変身！' },
+        { normal: 'נ', sofit: 'ן', name: 'ヌン (N)', hint: '最後になると「ながーく」伸びるよ！' },
+        { normal: 'פ', sofit: 'ף', name: 'ペー (P/F)', hint: '最後になると下にビローンと伸びるよ！' }
+    ];
+
+    // モード切り替え
+    function switchGame(gameNum) {
+        document.querySelectorAll('.game-card').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+        
+        document.getElementById(`game${gameNum}`).style.display = 'block';
+        event.target.classList.add('active');
+
+        if(gameNum === 2) initG2();
+        if(gameNum === 3) initG3();
+    }
+
+    // ゲーム1: 覚え歌
+    let g1Index = 0;
+    function g1Next() {
+        g1Index = (g1Index + 1) % alphabet.length;
+        document.getElementById('g1-char').innerText = alphabet[g1Index].char;
+        document.getElementById('g1-name').innerText = alphabet[g1Index].name;
+        document.getElementById('g1-sound').innerText = alphabet[g1Index].sound;
+    }
+
+    // ゲーム2: 似てる文字
+    let g2Score = 0;
+    let currentG2Idx = 0;
+    let correctOptIndex = 0;
+
+    function initG2() {
+        currentG2Idx = Math.floor(Math.random() * similarPairs.length);
+        const q = similarPairs[currentG2Idx];
+        
+        document.getElementById('g2-question').innerHTML = `<b>「${q.qName}」</b>は どっち？<br><small style="color:#e67e22">${q.hint}</small>`;
+        document.getElementById('g2-target').innerText = '?';
+        document.getElementById('g2-feedback').innerText = '';
+
+        correctOptIndex = Math.random() < 0.5 ? 0 : 1;
+        const btn0 = document.getElementById('g2-opt1');
+        const btn1 = document.getElementById('g2-opt2');
+
+        if(correctOptIndex === 0) {
+            btn0.innerText = q.target;
+            btn1.innerText = q.dummy;
+        } else {
+            btn0.innerText = q.dummy;
+            btn1.innerText = q.target;
+        }
+    }
+
+    function g2Check(selectedIndex) {
+        const fb = document.getElementById('g2-feedback');
+        const q = similarPairs[currentG2Idx];
+
+        if(selectedIndex === correctOptIndex) {
+            fb.className = 'feedback correct';
+            fb.innerText = '⭕ せいかい！ ' + q.explain;
+            g2Score += 10;
+            document.getElementById('g2-score').innerText = g2Score;
+            setTimeout(initG2, 2500);
+        } else {
+            fb.className = 'feedback wrong';
+            fb.innerText = '❌ ざんねん！もういっかい！';
+        }
+    }
+
+    // ゲーム3: 変身文字
+    let g3Index = 0;
+    function initG3() {
+        const item = sofitList[g3Index];
+        document.getElementById('g3-char').innerText = item.normal;
+        document.getElementById('g3-hint').innerText = `ふつうの形：${item.name}`;
+    }
+
+    function g3Transform() {
+        const item = sofitList[g3Index];
+        document.getElementById('g3-char').innerText = item.sofit;
+        document.getElementById('g3-hint').innerText = `へんしん後：${item.hint}`;
+    }
+
+    function g3Next() {
+        g3Index = (g3Index + 1) % sofitList.length;
+        initG3();
+    }
+</script>
+</body>
+</html>
