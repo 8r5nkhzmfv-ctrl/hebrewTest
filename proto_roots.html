@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja"><head><meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, must-revalidate"><meta http-equiv="Pragma" content="no-cache">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>語根トレーニング・試作</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+Hebrew:wght@400;600;700&display=swap" rel="stylesheet">
@@ -7,6 +8,7 @@
 :root{--bg:#f6f3ec;--card:#fff;--ink:#2a2620;--dim:#8a8274;--edge:#d9d2c3;--acc:#c4553c;--accE:#9c3f2a;--ok:#4f9a5f;--okBg:#e3f3e6;--ng:#d4553f;--ngBg:#fbe6e1;--gold:#b8863a}
 @media(prefers-color-scheme:dark){:root{--bg:#17140f;--card:#2a251c;--ink:#eae0c6;--dim:#a89b7c;--edge:#17120b;--okBg:#1f3325;--ngBg:#3a1f1a}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 html,body{height:100%;margin:0;overflow:hidden;overscroll-behavior:none}
 body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif;display:flex;justify-content:center;touch-action:manipulation}
 .heb{font-family:'Noto Sans Hebrew',sans-serif;direction:rtl;unicode-bidi:isolate}
@@ -32,10 +34,10 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
 @keyframes pop{from{transform:scale(.7)}to{transform:scale(1)}}
 @keyframes pulse{50%{transform:scale(1.12)}}
 @keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
-#field{flex:1;min-height:0;display:grid;direction:rtl;gap:9px}
-.cell{background:var(--edge);border-radius:14px;padding-bottom:4px;min-height:0}
+#field{flex:1;min-height:0;min-width:0;width:100%;display:grid;direction:rtl;gap:9px}
+.cell{background:var(--edge);border-radius:14px;padding-bottom:4px;min-height:0;min-width:0}
 .cell.off{opacity:.28;pointer-events:none}
-.tile{width:100%;height:100%;border:0;border-radius:14px;background:var(--card);color:var(--ink);font:500 clamp(24px,7vw,32px) 'Noto Sans Hebrew';cursor:pointer;transition:transform 60ms ease-out;touch-action:none}
+.tile{width:100%;height:100%;border:0;padding:0;min-width:0;border-radius:14px;background:var(--card);color:var(--ink);font:500 clamp(24px,7vw,32px) 'Noto Sans Hebrew';cursor:pointer;transition:transform 60ms ease-out;touch-action:none}
 .tile:active,.tile.p{transform:translateY(4px)}
 .fly{position:fixed;z-index:9;display:flex;align-items:center;justify-content:center;background:var(--card);border-radius:14px;font:500 28px 'Noto Sans Hebrew';pointer-events:none;will-change:transform}
 .spark{position:fixed;z-index:9;width:8px;height:8px;border-radius:50%;pointer-events:none;will-change:transform,opacity}
@@ -46,6 +48,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
 #sheet.ok{border-top:4px solid var(--ok)}#sheet.ng{border-top:4px solid var(--ng)}
 #sh1{font-size:16px;font-weight:700}#sh1 .heb{font-size:24px;color:var(--gold);margin-left:8px}
 #sh2{font-size:13.5px;line-height:1.7;margin-top:6px}#sh3{font-size:12.5px;color:var(--dim);line-height:1.7;margin-top:4px;display:none}#sh3.on{display:block}
+#sayrow{display:flex;align-items:center;gap:10px;margin-top:6px}#say{border:1px solid var(--edge);background:var(--bg);color:var(--ink);font:500 12.5px 'Noto Sans JP';padding:7px 12px;border-radius:10px;cursor:pointer;touch-action:none}#say:active{transform:translateY(2px)}#sayst{font-size:11.5px;color:var(--ng)}
 #more{border:0;background:none;color:var(--dim);font:12px 'Noto Sans JP';padding:6px 0;cursor:pointer;text-decoration:underline}
 #next{display:block;width:100%;margin-top:10px;border:0;border-radius:14px;background:var(--acc);box-shadow:0 4px 0 var(--accE);color:#fff;font:700 15px 'Noto Sans JP';padding:13px;cursor:pointer;transition:transform 60ms}
 #next:active{transform:translateY(3px)}
@@ -54,19 +57,21 @@ body{background:var(--bg);color:var(--ink);font-family:'Noto Sans JP',sans-serif
 </style></head><body>
 <div id="app">
  <div id="top"><div class="seg" id="seg"></div><button id="mute" aria-label="音">🔊</button></div>
- <div id="stat"><span>今日 <b id="pts">0</b>点</span><span>習得度 <b id="mst">0</b>%</span><span id="due"></span></div>
+ <div id="stat"><span>今日 <b id="pts">0</b>点</span><span>習得度 <b id="mst">0</b>%</span><span id="due"></span><span id="ver" style="margin-left:auto;font-size:10px;opacity:.6"></span></div>
  <div id="chips"></div>
  <div id="q"><div id="cap"></div><div id="qh" class="heb"></div><div id="qm"></div></div>
  <div id="slots"></div>
  <div id="field"></div>
  <button id="ans">Answer</button>
- <div id="sheet"><div id="sh1"></div><div id="sh2"></div><div id="sh3"></div><button id="more">詳細</button><button id="next">次へ</button></div>
+ <div id="sheet"><div id="sh1"></div><div id="sh2"></div><div id="sayrow"><button id="say">🔈 もう一度</button><span id="sayst"></span></div>
+ <div id="sh3"></div><button id="more">詳細</button><button id="next">次へ</button></div>
 </div>
 <script>
 const FALLBACK=[{"id":"R001","root":"שמר","meaning":"守る、見張る、保つ","derived":[{"heb":"מִשְׁמֶרֶת","mean":"見張り、務め"}]}];
 const ALL="אבגדהוזחטיכלמנסעפצקרשת".split("");
 const SIM=[["ד","ר"],["ב","כ"],["ה","ח","ת"],["ו","ז"],["מ","ס"],["ע","צ"],["ג","נ"],["ק","כ"],["ש","ס"],["ט","ת"]];
 const FINAL={"ך":"כ","ם":"מ","ן":"נ","ף":"פ","ץ":"צ"};
+const VER="1008-d";
 const K={log:"roots_proto_log_v1",srs:"roots_proto_srs_v1",pts:"roots_proto_pts_v1",mute:"roots_proto_mute_v1"};
 const INT=[1,3,7,14,30,60,120],RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
 let pick="due",roots=[],cur=null,qtype="d",diff="easy",picked=[],locked=false,item=null,muted=false;
@@ -100,11 +105,22 @@ const sTap=i=>tone(base(i),.07,"sine",.13,0,base(i)*1.07);
 const sUndo=i=>tone(base(i)*.72,.08,"sine",.1,0,base(i)*.72*.92);
 const sOk=()=>{bell(1047,0,.15,.15,1);[[1319,.11],[1568,.12],[2093,.15]].forEach(([f,g])=>bell(f,.08,.38,g,1))};
 const sNg=()=>{tone(233,.16,"triangle",.1);tone(196,.22,"triangle",.1,.12)};
-const sUp=()=>{[523,659,784,1047].forEach((f,k)=>bell(f,k*.1,1,.15));bell(1319,.45,1.4,.16);bell(1047,.45,1.4,.1)};
-function speak(t){
- if(muted||!t||!window.speechSynthesis)return;
- try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="he-IL";u.rate=.85;
-  const v=(speechSynthesis.getVoices()||[]).find(x=>/^he|iw/i.test(x.lang));if(v)u.voice=v;speechSynthesis.speak(u)}catch(e){}}
+const sUp=()=>{sOk();bell(2093,.24,.3,.1,1);bell(2637,.3,.45,.11,1)};
+let voices=[],uref=null,curWord="";
+const SS=()=>window.speechSynthesis;
+function loadVoices(){try{voices=SS().getVoices()||[]}catch(e){}}
+try{loadVoices();SS()&&(SS().onvoiceschanged=loadVoices)}catch(e){}
+const hebVoice=()=>voices.find(x=>/^(he|iw)/i.test(x.lang));
+function say(t){
+ try{const u=new SpeechSynthesisUtterance(t),v=hebVoice();u.lang=v?v.lang:"he-IL";if(v)u.voice=v;u.rate=.85;u.volume=1;
+  u.onerror=ev=>{$("sayst").textContent="再生エラー："+(ev.error||"不明")};uref=u;SS().speak(u)}catch(e){$("sayst").textContent="再生エラー"}}
+function speak(t,force){
+ if(muted||!t||!SS())return;
+ if(force&&(SS().speaking||SS().pending)){SS().cancel();setTimeout(()=>say(t),80)}else say(t)}
+function voiceStatus(){
+ loadVoices();
+ $("sayst").textContent=!SS()?"この端末は音声読み上げ非対応":(voices.length&&!hebVoice())?"ヘブル語音声が未インストール（音声ガイド参照）":"";
+}
 function primeSpeech(){try{if(window.speechSynthesis&&!muted){const u=new SpeechSynthesisUtterance(" ");u.volume=0;speechSynthesis.speak(u)}}catch(e){}}
 const buzz=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
 /* ---------- SRS・点 ---------- */
@@ -146,7 +162,7 @@ function next(){
  if(qtype==="d"&&cur.derived&&cur.derived.length){item=cur.derived[Math.random()*cur.derived.length|0];$("cap").textContent="派生語の語根は？（"+(diff==="full"?22:8)+"文字）";$("qh").textContent=item.heb;$("qm").textContent=""}
  else{item=null;$("cap").textContent="この意味の語根は？（"+(diff==="full"?22:8)+"文字）";$("qh").textContent="";$("qm").textContent=cur.meaning}
  const f=$("field");f.innerHTML="";const set=bubbles(L),cols=diff==="full"?6:4,rows=Math.ceil(set.length/cols);
- f.style.gridTemplateColumns="repeat("+cols+",1fr)";f.style.gridTemplateRows="repeat("+rows+",1fr)";
+ f.style.gridTemplateColumns="repeat("+cols+",minmax(0,1fr))";f.style.gridTemplateRows="repeat("+rows+",1fr)";
  set.forEach(l=>{const c=document.createElement("div"),b=document.createElement("button");c.className="cell";b.className="tile";b.textContent=l;
   b.addEventListener("pointerdown",e=>{if(!locked&&!drag)press(e,"tile",{l,c,b})});c.appendChild(b);f.appendChild(c)});
  draw();stats();
@@ -246,18 +262,20 @@ function judge(){
  draw(res);
  const lg=ld(K.log,{}),e=lg[cur.id]||(lg[cur.id]={ok:0,ng:0,order:0,letter:0});
  if(ok)e.ok++;else{e.ng++;kind==="順序違い"?e.order++:e.letter++}sv(K.log,lg);
- let gain=0,note="",up=false;
+ let gain=0,note="",up=false,lvNow=0;
  if(pick==="due"){
   const s=ld(K.srs,{}),t=today(),st=s[cur.id]||(s[cur.id]={step:0,due:t,seen:false}),before=level(st),cap=diff==="full"?7:3;
   if(ok){if(st.step<cap)st.step++;st.due=addDays(INT[Math.max(st.step,1)-1])}else{st.step=Math.max(0,st.step-1);st.due=addDays(1)}
   st.seen=true;sv(K.srs,s);
   const p=getPts();if(!p.joined){p.joined=true;p.pts+=5;gain+=5}
+  lvNow=level(st);
   if(ok&&level(st)>before){p.pts+=10;gain+=10;up=true}
   p.date=today();sv(K.pts,p);
   note="Lv"+level(st)+"／次回 "+st.due+(ok&&diff==="easy"&&st.step>=cap?"（Lv3〜は22文字で正解が必要）":"");
  }
- ok?(up?sUp():sOk()):sNg();buzz(ok?[15]:[30,40,30]);spark(ok);
- if(ok){const w=item?item.heb:(cur.form||cur.root);setTimeout(()=>speak(w),RM?0:380)}
+ ok?(up&&lvNow>=3?sUp():sOk()):sNg();buzz(ok?[15]:[30,40,30]);spark(ok);
+ curWord=item?item.heb:(cur.form||cur.root);$("sayst").textContent="";voiceStatus();
+ if(ok)setTimeout(()=>speak(curWord),RM?0:380)
  const S=$("sheet");
  $("sh1").innerHTML=(ok?"✓ 正解":"✗ "+kind)+'<span class="heb">'+cur.root+"</span>"+(gain?'<span style="color:var(--ok);font-size:13px"> +'+gain+"点</span>":"");
  $("sh2").innerHTML=(item?item.heb+"＝"+item.mean+"<br>":"")+"意味："+cur.meaning;
@@ -267,9 +285,11 @@ function judge(){
  stats();bump();
 }
 $("ans").addEventListener("pointerdown",e=>{e.preventDefault();if(locked||picked.length<3||drag)return;audio();primeSpeech();tone(660,.05,"sine",.1);locked=true;$("ans").className="";judge()});
+$("say").addEventListener("pointerdown",e=>{e.preventDefault();audio();speak(curWord,true)});
 $("more").onclick=()=>{const o=$("sh3").classList.toggle("on");$("more").textContent=o?"閉じる":"詳細"};
 $("next").addEventListener("pointerdown",e=>{e.preventDefault();audio();tone(440,.06,"sine",.1);next()});
 $("mute").onclick=()=>{muted=!muted;sv(K.mute,muted);$("mute").textContent=muted?"🔇":"🔊";audio()};
 muted=!!ld(K.mute,false);$("mute").textContent=muted?"🔇":"🔊";
+$("ver").textContent=VER;
 fetch("data/roots.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw 0;return r.json()}).catch(()=>FALLBACK).then(d=>{roots=d;bar();next()});
 </script></body></html>
